@@ -652,6 +652,7 @@ const PROJECTS = [
     blurb:
       "A fitness-center website currently in development. Project details, final features, and the live release will be shared soon.",
     stack: ["Responsive Website", "Modern UI", "In Progress"],
+    techSummary: "A responsive client website in progress, with the final service, booking, and visual-system details to be released at launch.",
     status: "COMING SOON",
   },
   {
@@ -660,6 +661,7 @@ const PROJECTS = [
     blurb:
       "A voice-driven AI desktop assistant with a glassmorphic UI, wake-word activation, and goodbye-triggered shutdown handling.",
     stack: ["Python", "Speech Recognition", "AI Integration"],
+    techSummary: "Python coordinates voice input, speech recognition, and AI responses inside a desktop-assistant workflow.",
     github: "https://github.com/Jeevan2401/ravana-ai-asistant",
   },
   {
@@ -668,6 +670,7 @@ const PROJECTS = [
     blurb:
       "A fake news detection system trained on a ~54k-article dataset, shipped as a Flask app with a Chrome extension and Docker packaging.",
     stack: ["Flask", "scikit-learn", "Chrome Extension", "Docker"],
+    techSummary: "A Flask delivery layer connects a scikit-learn classifier to a browser extension, packaged for repeatable setup with Docker.",
     github: "https://github.com/Jeevan2401/truthlens-fake-news-detector",
   },
   {
@@ -676,6 +679,7 @@ const PROJECTS = [
     blurb:
       "A phone-in-hand / doomscroll monitor built with real-time computer vision to nudge you off your screen when it catches you scrolling too long.",
     stack: ["Python", "OpenCV", "MediaPipe"],
+    techSummary: "Python combines OpenCV image handling with MediaPipe landmarks to detect phone-in-hand behavior in real time.",
     github: "https://github.com/Jeevan2401/doomscroll-detector",
   },
 ];
@@ -827,9 +831,16 @@ export default function Portfolio() {
         .display { font-family: 'Space Grotesk', sans-serif; }
         ::selection { background: ${ACCENT}; color: #0a0a0b; }
         a { color: inherit; text-decoration: none; }
+        .proj-card { position: relative; overflow: hidden; transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease; }
+        .proj-card:hover, .proj-card:focus-visible, .proj-card:focus-within { border-color: ${ACCENT}88 !important; background: #171719 !important; box-shadow: 0 20px 46px rgba(0,0,0,.24), inset 3px 0 0 ${ACCENT}; outline: none; }
+        .proj-tech-reveal { max-height: 0; opacity: 0; overflow: hidden; transform: translateY(5px); transition: max-height 260ms cubic-bezier(.16,.84,.44,1), opacity 180ms ease, transform 260ms cubic-bezier(.16,.84,.44,1); }
+        .proj-card:hover .proj-tech-reveal, .proj-card:focus-visible .proj-tech-reveal, .proj-card:focus-within .proj-tech-reveal { max-height: 78px; opacity: 1; transform: translateY(0); }
+        .proj-tech-reveal__label { display: block; margin-top: 15px; color: ${ACCENT}; font: 500 9.5px/1 "JetBrains Mono", monospace; letter-spacing: .13em; }
+        .proj-tech-reveal__copy { display: block; margin-top: 6px; color: #b8b8bd; font-size: 12px; line-height: 1.55; }
         @media (max-width: 640px) {
           .contact-grid { grid-template-columns: 1fr !important; }
           .contact-form-row { grid-template-columns: 1fr !important; }
+          .proj-tech-reveal { max-height: 78px; opacity: 1; transform: none; }
         }
         button, a.cursor-hover, .send-btn, input, textarea {
           border-radius: 10px;
@@ -1289,6 +1300,7 @@ export default function Portfolio() {
               <TiltCard>
                 <div
                   className="proj-card"
+                  tabIndex={0}
                   style={{
                     border: "1px solid #ffffff1a",
                     background: "#131315",
@@ -1346,6 +1358,10 @@ export default function Portfolio() {
                     <p style={{ color: "#a3a3a8", fontSize: 14, lineHeight: 1.6, margin: 0 }}>
                       {p.blurb}
                     </p>
+                    <div className="proj-tech-reveal">
+                      <span className="proj-tech-reveal__label">TECH SNAPSHOT</span>
+                      <span className="proj-tech-reveal__copy">{p.techSummary}</span>
+                    </div>
                   </div>
                   <div>
                     <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 20 }}>

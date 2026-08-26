@@ -6,7 +6,8 @@
 import { useEffect, useRef, useState } from "react";
 
 const INTRO_DURATION = 3100;
-const BMW_CUTOUT = "/manus-storage/bmw-m4-intro-matte_bd7c2341.png";
+const BMW_CUTOUT = "/manus-storage/bmw-m4-intro-matte_58f0c649.webp";
+const ENGINE_REV = "/manus-storage/bmw-engine-rev_dede1da1.mp3";
 
 function getCarPosition(progress: number) {
   const stops = [
@@ -28,14 +29,31 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
   const [progress, setProgress] = useState(0);
   const [leaving, setLeaving] = useState(false);
   const [carReady, setCarReady] = useState(false);
+  const [soundMuted, setSoundMuted] = useState(true);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startExit = (reducedMotion = false) => {
     setLeaving(true);
+    audioRef.current?.pause();
     if (finishTimer.current) clearTimeout(finishTimer.current);
     if (exitTimer.current) clearTimeout(exitTimer.current);
     exitTimer.current = setTimeout(onComplete, reducedMotion ? 320 : 920);
+  };
+
+  const toggleSound = () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const nextMuted = !soundMuted;
+    setSoundMuted(nextMuted);
+    audio.muted = nextMuted;
+    if (nextMuted) {
+      audio.pause();
+      return;
+    }
+    audio.currentTime = 0;
+    audio.play().catch(() => setSoundMuted(true));
   };
 
   useEffect(() => {
@@ -192,6 +210,25 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         }
         .bmw-intro__skip:hover, .bmw-intro__skip:focus-visible { border-color: var(--intro-red); color: #f2f0ec; outline: none; }
         .bmw-intro__skip:active { transform: scale(.97); }
+        .bmw-intro__sound {
+          position: absolute;
+          left: clamp(18px, 4vw, 48px);
+          bottom: clamp(18px, 4vw, 42px);
+          z-index: 4;
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          border: 1px solid rgba(255,255,255,.28);
+          background: rgba(8,8,9,.66);
+          color: #b9b9be;
+          padding: 10px 13px;
+          font: 500 10px/1 "JetBrains Mono", monospace;
+          letter-spacing: .14em;
+          transition: border-color 180ms ease, color 180ms ease, transform 160ms cubic-bezier(.16,.84,.44,1);
+        }
+        .bmw-intro__sound:hover, .bmw-intro__sound:focus-visible { border-color: var(--intro-red); color: #f2f0ec; outline: none; }
+        .bmw-intro__sound:active { transform: scale(.97); }
+        .bmw-intro__sound-indicator { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px currentColor; opacity: .75; }
         @media (max-width: 640px) {
           .bmw-intro__car { width: 142vw; top: 31%; }
           .bmw-intro__reading { margin-top: min(46vh, 350px); }
@@ -205,6 +242,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
       `}</style>
       <div className="bmw-intro__grid" aria-hidden="true" />
       <div className="bmw-intro__speedline" aria-hidden="true" />
+      <audio ref={audioRef} src={ENGINE_REV} preload="metadata" muted={soundMuted} />
       <img className={`bmw-intro__car ${carReady ? "bmw-intro__car--ready" : ""}`} src={BMW_CUTOUT} onLoad={() => setCarReady(true)} onError={() => setCarReady(true)} style={{ transform: `translate3d(${carPosition}%, 0, 0) skewX(${Math.min(2, progress / 52 - 1.2)}deg)`, filter: `blur(${carBlur}px) drop-shadow(0 28px 20px rgba(0,0,0,.5)) drop-shadow(-42px 0 16px rgba(224,50,44,.14))` }} alt="" aria-hidden="true" />
       <div className="bmw-intro__reading">
         <div className="bmw-intro__index"><span>LAUNCH SEQUENCE</span><span className="bmw-intro__bars" aria-hidden="true"><i /><i /><i /></span></div>
@@ -212,6 +250,10 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         <p className="bmw-intro__name" style={{ opacity: nameOpacity, transform: `translateY(${(1 - nameOpacity) * 10}px)` }}>JEEVAN</p>
         <div className="bmw-intro__rule" aria-hidden="true"><b style={{ transform: `scaleX(${progress / 100})` }} /></div>
       </div>
+      <button type="button" className="bmw-intro__sound" onClick={toggleSound} aria-pressed={!soundMuted} aria-label={soundMuted ? "Enable engine sound" : "Mute engine sound"}>
+        <span className="bmw-intro__sound-indicator" aria-hidden="true" />
+        {soundMuted ? "SOUND OFF" : "SOUND ON"}
+      </button>
       <button type="button" className="bmw-intro__skip" onClick={() => startExit(window.matchMedia("(prefers-reduced-motion: reduce)").matches)}>SKIP INTRO</button>
     </section>
   );
