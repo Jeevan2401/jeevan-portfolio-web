@@ -4,7 +4,7 @@
  */
 import { useEffect, useRef, useState } from "react";
 
-const INTRO_DURATION = 2700;
+const INTRO_DURATION = 1700;
 const INTRO_HANDOFF_DURATION = 300;
 const BMW_REFERENCE = "/manus-storage/bmw-side-profile-true-alpha_800a6571.webp";
 const ENGINE_REV = "/manus-storage/bmw-engine-rev_dede1da1.mp3";

@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Set the active BMW launch and numerical loader to complete in exactly 2.0 seconds.
+- [x] Align the car pass and exit fade so the hero appears immediately after 0–100 completion.
+- [x] Validate the complete two-second sequence and handoff.
 - [x] Set the active BMW launch and numerical loader to complete in exactly 3.0 seconds.
 - [x] Align the car pass and intro fade so the hero appears immediately after the 0–100 completion state.
 - [x] Validate the complete sequence duration and mobile/desktop handoff.
