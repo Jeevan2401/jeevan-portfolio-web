@@ -710,9 +710,9 @@ const EXPERIENCE = [
 ];
 
 const STATS = [
-  { n: 4, suffix: "+", label: "Projects Shipped" },
-  { n: 400, suffix: "+", label: "Hours of Practice" },
-  { n: 3, suffix: "", label: "Stacks Mastered" },
+  { value: "04", label: "PROJECT LOGS" },
+  { value: "WEB", label: "RESPONSIVE FIRST" },
+  { value: "E2E", label: "IDEA TO HANDOFF" },
 ];
 
 function getFormError(field, value) {
@@ -1276,8 +1276,8 @@ export default function Portfolio() {
           {STATS.map((s, i) => (
             <Reveal key={s.label} delay={i * 100}>
               <div>
-                <div className="display" style={{ fontSize: 44, fontWeight: 700, color: ACCENT }}>
-                  <Counter to={s.n} suffix={s.suffix} />
+                <div className="display" style={{ fontSize: 38, fontWeight: 700, color: ACCENT, letterSpacing: -1 }}>
+                  {s.value}
                 </div>
                 <div className="mono" style={{ fontSize: 11, letterSpacing: 1, color: "#8b8b90", marginTop: 4 }}>
                   {s.label.toUpperCase()}
@@ -1301,7 +1301,12 @@ export default function Portfolio() {
             Selected Projects
           </h2>
         </Reveal>
+        <div className="mono" style={{ display: "inline-flex", alignItems: "center", gap: 10, margin: "-22px 0 28px", paddingTop: 10, borderTop: "1px solid #ffffff1a", color: "#8b8b90", fontSize: 10, letterSpacing: 1.2 }}>
+          <span style={{ display: "inline-block", width: 18, height: 2, background: ACCENT, boxShadow: "7px -4px 0 #f2f0ec" }} />
+          BUILD ARCHIVE · {String(PROJECTS.length).padStart(2, "0")} ENTRIES
+        </div>
         <div
+          className="project-archive-grid"
           style={{
             display: "grid",
             gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
@@ -1502,7 +1507,7 @@ export default function Portfolio() {
         </Reveal>
         <Reveal delay={60}>
           <h2 className="display" style={{ fontSize: "clamp(30px,5vw,52px)", fontWeight: 700, margin: "0 0 40px" }}>
-            Have a website in mind?
+              Have a responsive website in mind?
           </h2>
         </Reveal>
 

@@ -1,5 +1,9 @@
 # Active Enhancement Checklist
 
+- [x] Generate a short cinematic BMW launch video with real forward motion and camera parallax.
+- [x] Optimize the video for the intro and retain a clean poster/fallback state.
+- [x] Replace the flat image motion with the generated video while retaining the skip and sound controls.
+- [x] Validate the video intro’s mobile behavior and loading impact.
 - [x] Remove the remaining fade and stagger timing from the post-intro hero detail reveal.
 - [x] Confirm the hero copy and actions appear immediately after the BMW launch closes.
 - [x] Restore the mobile hero description and action buttons.
