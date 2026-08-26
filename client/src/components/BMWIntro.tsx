@@ -18,16 +18,60 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
   const [carReady, setCarReady] = useState(false);
   const [soundMuted, setSoundMuted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const lastProgressRef = useRef(0);
+  const exitingRef = useRef(false);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startExit = (reducedMotion = false) => {
+    if (exitingRef.current) return;
+    exitingRef.current = true;
+    lastProgressRef.current = 100;
+    setProgress(100);
     setLeaving(true);
     audioRef.current?.pause();
     if (finishTimer.current) clearTimeout(finishTimer.current);
     if (exitTimer.current) clearTimeout(exitTimer.current);
     exitTimer.current = setTimeout(onComplete, reducedMotion ? 220 : 600);
   };
+
+  useEffect(() => {
+    const root = document.documentElement;
+    const body = document.body;
+    const saved = {
+      rootOverflow: root.style.overflow,
+      rootOverscroll: root.style.overscrollBehavior,
+      bodyOverflow: body.style.overflow,
+      bodyOverscroll: body.style.overscrollBehavior,
+      bodyTouchAction: body.style.touchAction,
+    };
+    const scrollKeys = new Set([" ", "ArrowUp", "ArrowDown", "PageUp", "PageDown", "Home", "End"]);
+    const preventScroll = (event: Event) => event.preventDefault();
+    const preventScrollKey = (event: KeyboardEvent) => {
+      if (scrollKeys.has(event.key)) event.preventDefault();
+    };
+
+    window.scrollTo(0, 0);
+    root.style.overflow = "hidden";
+    root.style.overscrollBehavior = "none";
+    body.style.overflow = "hidden";
+    body.style.overscrollBehavior = "none";
+    body.style.touchAction = "none";
+    window.addEventListener("wheel", preventScroll, { passive: false });
+    window.addEventListener("touchmove", preventScroll, { passive: false });
+    window.addEventListener("keydown", preventScrollKey, { passive: false });
+
+    return () => {
+      window.removeEventListener("wheel", preventScroll);
+      window.removeEventListener("touchmove", preventScroll);
+      window.removeEventListener("keydown", preventScrollKey);
+      root.style.overflow = saved.rootOverflow;
+      root.style.overscrollBehavior = saved.rootOverscroll;
+      body.style.overflow = saved.bodyOverflow;
+      body.style.overscrollBehavior = saved.bodyOverscroll;
+      body.style.touchAction = saved.bodyTouchAction;
+    };
+  }, []);
 
   const toggleSound = () => {
     const audio = audioRef.current;
@@ -53,7 +97,10 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
 
     const tick = (now: number) => {
       const raw = Math.min((now - start) / duration, 1);
-      setProgress(Math.min(100, Math.floor(raw * 100)));
+      const nextProgress = Math.min(100, Math.floor(raw * 100));
+      const monotonicProgress = Math.max(lastProgressRef.current, nextProgress);
+      lastProgressRef.current = monotonicProgress;
+      setProgress(monotonicProgress);
       if (raw < 1) {
         frame = requestAnimationFrame(tick);
         return;
@@ -87,6 +134,8 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           background: #080809;
           color: #f2f0ec;
           isolation: isolate;
+          touch-action: none;
+          overscroll-behavior: none;
           transition: opacity 580ms cubic-bezier(.16,.84,.44,1), transform 580ms cubic-bezier(.16,.84,.44,1), visibility 580ms step-end;
         }
         .bmw-intro--leaving { opacity: 0; transform: scale(1.01); visibility: hidden; pointer-events: none; }

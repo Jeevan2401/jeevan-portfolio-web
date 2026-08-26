@@ -804,15 +804,17 @@ export default function Portfolio() {
   };
 
   useEffect(() => {
+    document.documentElement.style.overflow = introDone ? "" : "hidden";
+    document.body.style.overflow = introDone ? "" : "hidden";
     if (!introDone) return;
-    document.body.style.overflow = "";
     const t = setTimeout(() => setLoaded(true), 150);
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      document.documentElement.style.overflow = "";
+      document.body.style.overflow = "";
+    };
   }, [introDone]);
 
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-  }, []);
 
   const scrollTo = (id) => {
     setMenuOpen(false);

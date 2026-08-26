@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Lock document scrolling, wheel input, touch scrolling, and relevant keys until the BMW intro closes.
+- [x] Guarantee the intro counter cannot decrease or restart during the active launch.
+- [x] Verify the portfolio becomes scrollable only after the intro handoff completes.
 - [x] Add a concise 24-hour response-time expectation beside the fast WhatsApp channel.
 - [x] Customize the WhatsApp prefilled project brief with client-name and project-type placeholders.
 - [x] Enhance the WhatsApp hover and focus interaction while preserving accessibility.
