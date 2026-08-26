@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Restore the mobile hero description and action buttons.
+- [x] Rebalance the mobile hero height and scroll cue after restoring the content.
+- [x] Verify the corrected first screen at the supplied mobile viewport.
 - [x] Replace eased loading with a visibly linear 0–100 progression.
 - [x] Rework BMW movement into a realistic approach, close pass, and exit rather than a simple lateral slide.
 - [x] Validate the revised intro motion against the supplied recording and confirm it remains lightweight.

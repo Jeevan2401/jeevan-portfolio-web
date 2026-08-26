@@ -831,7 +831,12 @@ export default function Portfolio() {
         .display { font-family: 'Space Grotesk', sans-serif; }
         ::selection { background: ${ACCENT}; color: #0a0a0b; }
         a { color: inherit; text-decoration: none; }
+        .brand-mark { box-shadow: 5px 5px 0 #e0322c2b, inset 0 0 0 1px #ffffff0c; }
+        .brand-mark::after { content: ''; position: absolute; right: -2px; bottom: 5px; width: 16px; height: 2px; background: ${ACCENT}; box-shadow: -8px -5px 0 #f2f0ec; opacity: .9; }
+        .portfolio-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background: linear-gradient(105deg, transparent 0 42%, #e0322c0a 48%, transparent 58%), repeating-linear-gradient(0deg, transparent 0 28px, #ffffff05 29px 30px); mix-blend-mode: screen; }
         .proj-card { position: relative; overflow: hidden; transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease; }
+        .proj-card::after { content: ''; position: absolute; top: 12px; right: 12px; width: 16px; height: 12px; border-top: 1px solid #e0322c66; border-right: 1px solid #e0322c66; opacity: .6; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; }
+        .proj-card:hover::after, .proj-card:focus-visible::after, .proj-card:focus-within::after { opacity: 1; transform: translate(-2px, 2px); }
         .proj-card:hover, .proj-card:focus-visible, .proj-card:focus-within { border-color: ${ACCENT}88 !important; background: #171719 !important; box-shadow: 0 20px 46px rgba(0,0,0,.24), inset 3px 0 0 ${ACCENT}; outline: none; }
         .proj-tech-reveal { max-height: 0; opacity: 0; overflow: hidden; transform: translateY(5px); transition: max-height 260ms cubic-bezier(.16,.84,.44,1), opacity 180ms ease, transform 260ms cubic-bezier(.16,.84,.44,1); }
         .proj-card:hover .proj-tech-reveal, .proj-card:focus-visible .proj-tech-reveal, .proj-card:focus-within .proj-tech-reveal { max-height: 78px; opacity: 1; transform: translateY(0); }
@@ -841,6 +846,13 @@ export default function Portfolio() {
           .contact-grid { grid-template-columns: 1fr !important; }
           .contact-form-row { grid-template-columns: 1fr !important; }
           .proj-tech-reveal { max-height: 78px; opacity: 1; transform: none; }
+          .portfolio-hero { min-height: 100svh !important; justify-content: center !important; padding: 104px 20px 88px !important; }
+          .hero-eyebrow { font-size: 9px !important; letter-spacing: 1.8px !important; margin-bottom: 15px !important; }
+          .hero-title { font-size: clamp(48px, 18vw, 72px) !important; }
+          .hero-copy { max-width: 31ch !important; margin-top: 18px !important; font-size: 14px !important; line-height: 1.55 !important; }
+          .hero-actions { gap: 10px !important; margin-top: 22px !important; }
+          .hero-actions button { padding: 12px 14px !important; font-size: 10px !important; }
+          .brand-mark { width: 38px !important; height: 38px !important; }
         }
         button, a.cursor-hover, .send-btn, input, textarea {
           border-radius: 10px;
@@ -956,7 +968,7 @@ export default function Portfolio() {
       >
         <Magnetic strength={14}>
           <div
-            className="mono"
+            className="mono brand-mark"
             style={{
               width: 34,
               height: 34,
@@ -1071,6 +1083,7 @@ export default function Portfolio() {
       {/* ---------- HERO ---------- */}
       <section
         id="top"
+        className="portfolio-hero"
         style={{
           minHeight: "100vh",
           display: "flex",
@@ -1106,11 +1119,11 @@ export default function Portfolio() {
           }}
         />
 
-        <div className="mono flicker" style={{ color: ACCENT, fontSize: 12, letterSpacing: 3, marginBottom: 18, position: "relative" }}>
+        <div className="mono flicker hero-eyebrow" style={{ color: ACCENT, fontSize: 12, letterSpacing: 3, marginBottom: 18, position: "relative" }}>
           WEBSITE DEVELOPER · COMPUTER SCIENCE STUDENT
         </div>
         <h1
-          className="display"
+          className="display hero-title"
           style={{
             fontSize: "clamp(52px, 14vw, 150px)",
             fontWeight: 700,
@@ -1126,6 +1139,7 @@ export default function Portfolio() {
           <AnimatedName text={name} />
         </h1>
         <p
+          className="hero-copy"
           style={{
             maxWidth: 520,
             color: "#b9b9be",
@@ -1133,23 +1147,24 @@ export default function Portfolio() {
             lineHeight: 1.6,
             marginTop: 22,
             position: "relative",
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(12px)",
-            transition: "opacity 0.8s ease 1.1s, transform 0.8s ease 1.1s",
+            opacity: introDone ? 1 : 0,
+            transform: introDone ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 0.34s ease, transform 0.34s cubic-bezier(.16,.84,.44,1)",
           }}
         >
           Website developer building responsive, practical digital experiences. Computer Science student, independent builder, focused on work that ships.
         </p>
         <div
+          className="hero-actions"
           style={{
             display: "flex",
             gap: 14,
             marginTop: 34,
             flexWrap: "wrap",
             position: "relative",
-            opacity: loaded ? 1 : 0,
-            transform: loaded ? "translateY(0)" : "translateY(12px)",
-            transition: "opacity 0.8s ease 1.3s, transform 0.8s ease 1.3s",
+            opacity: introDone ? 1 : 0,
+            transform: introDone ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 0.38s ease 70ms, transform 0.38s cubic-bezier(.16,.84,.44,1) 70ms",
           }}
         >
           <Magnetic strength={20} as="button" onClick={() => scrollTo("work")}
