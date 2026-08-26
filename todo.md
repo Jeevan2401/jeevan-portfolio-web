@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Remove the profile card’s pointer-driven hover tilt and glare effect.
+- [x] Preserve card flipping, sharing, audio feedback, and touch-safe scrolling.
+- [x] Validate the simplified profile-card behavior on desktop and mobile.
 - [x] Replace the generic technical back content with truthful programming-language experience levels.
 - [x] Add a reliable profile-share action beneath the card, with graceful sharing fallback.
 - [x] Add a short, unobtrusive swoosh whenever the card changes face.

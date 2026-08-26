@@ -862,27 +862,6 @@ export default function Portfolio() {
     setProfileCardOpen(false);
   };
 
-  const handleProfileCardMouseMove = (event) => {
-    const scene = event.currentTarget;
-    const bounds = scene.getBoundingClientRect();
-    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
-    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
-    const rotateY = ((x - 50) / 50) * 2.1;
-    const rotateX = ((50 - y) / 50) * 2.1;
-    scene.style.setProperty("--glare-x", `${x}%`);
-    scene.style.setProperty("--glare-y", `${y}%`);
-    scene.style.setProperty("--glare-opacity", "1");
-    scene.style.setProperty("--card-rotate-x", `${rotateX}deg`);
-    scene.style.setProperty("--card-rotate-y", `${rotateY}deg`);
-  };
-
-  const clearProfileCardGlare = (event) => {
-    const scene = event.currentTarget;
-    scene.style.setProperty("--glare-opacity", "0");
-    scene.style.setProperty("--card-rotate-x", "0deg");
-    scene.style.setProperty("--card-rotate-y", "0deg");
-  };
-
   const playCardSwoosh = () => {
     if (typeof window === "undefined") return;
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -978,11 +957,10 @@ export default function Portfolio() {
         .profile-card__topline { display: flex; align-items: center; justify-content: space-between; min-height: 18px; color: #c9c9cc; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .14em; }
         .profile-card__close { width: 24px; height: 24px; padding: 0; border: 1px solid #ffffff33; color: #b8b8bd; background: #0a0a0ba8; cursor: pointer; font: 500 12px/1 'JetBrains Mono', monospace; }
         .profile-card__close:hover, .profile-card__close:focus-visible { color: #f2f0ec; border-color: ${ACCENT}; outline: none; }
-        .profile-card__scene { --glare-x: 50%; --glare-y: 50%; --glare-opacity: 0; --card-rotate-x: 0deg; --card-rotate-y: 0deg; position: relative; z-index: 1; display: block; width: 100%; height: 392px; margin-top: 9px; padding: 0; color: inherit; text-align: left; border: 0; background: transparent; cursor: pointer; perspective: 1000px; transform-style: preserve-3d; touch-action: pan-y; }
-        .profile-card__scene::after { content: ''; position: absolute; z-index: 5; inset: 0; opacity: var(--glare-opacity); pointer-events: none; background: radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.58) 0%, rgba(118,235,255,.23) 11%, rgba(255,90,200,.18) 22%, rgba(255,222,97,.12) 33%, transparent 58%), repeating-linear-gradient(113deg, transparent 0 7px, rgba(106,229,255,.16) 8px 9px, transparent 10px 18px); mix-blend-mode: color-dodge; transition: opacity 170ms ease; }
+        .profile-card__scene { position: relative; z-index: 1; display: block; width: 100%; height: 392px; margin-top: 9px; padding: 0; color: inherit; text-align: left; border: 0; background: transparent; cursor: pointer; perspective: 1000px; transform-style: preserve-3d; touch-action: pan-y; }
         .profile-card__scene:focus-visible { outline: 2px solid #f2f0ec; outline-offset: 4px; }
-        .profile-card__flipper { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX(var(--card-rotate-x)) rotateY(var(--card-rotate-y)); transition: transform 460ms cubic-bezier(.16,.84,.44,1); }
-        .profile-card__scene[data-flipped='true'] .profile-card__flipper { transform: rotateX(var(--card-rotate-x)) rotateY(calc(180deg + var(--card-rotate-y))); transition-duration: 640ms; }
+        .profile-card__flipper { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transition: transform 460ms cubic-bezier(.16,.84,.44,1); }
+        .profile-card__scene[data-flipped='true'] .profile-card__flipper { transform: rotateY(180deg); transition-duration: 640ms; }
         .profile-card__face { position: absolute; inset: 0; display: block; overflow: hidden; padding: 10px; border: 1px solid #ffffff20; background: linear-gradient(145deg, #141416 0%, #09090a 100%); backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: inset 0 0 0 1px #ffffff06; }
         .profile-card__face--back { transform: rotateY(180deg); background: linear-gradient(145deg, #181416 0%, #0b0b0d 64%, #131014 100%); }
         .profile-card__face::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55; background: linear-gradient(125deg, transparent 0 37%, #e0322c18 38% 39%, transparent 40% 61%, #63c8ff16 62% 63%, transparent 64%), repeating-linear-gradient(0deg, transparent 0 24px, #ffffff05 25px 26px); }
@@ -1142,7 +1120,6 @@ export default function Portfolio() {
           .profile-card__flipper, .profile-card__scene[data-flipped='true'] .profile-card__flipper { transition-duration: 1ms; transform: none; }
           .profile-card__scene[data-flipped='true'] .profile-card__face--front { display: none; }
           .profile-card__scene[data-flipped='true'] .profile-card__face--back { display: block; transform: none; }
-          .profile-card__scene::after { display: none; }
         }
       `}</style>
 
@@ -1221,8 +1198,6 @@ export default function Portfolio() {
             aria-pressed={profileCardFlipped}
             aria-label={profileCardFlipped ? "Technical skills and statistics shown. Activate to return to the portrait." : "Portrait shown. Activate to reveal detailed technical skills and statistics."}
             onClick={flipProfileCard}
-            onMouseMove={handleProfileCardMouseMove}
-            onMouseLeave={clearProfileCardGlare}
           >
             <span className="profile-card__flipper">
               <span className="profile-card__face profile-card__face--front">
