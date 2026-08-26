@@ -1,0 +1,7 @@
+# Validation Notes
+
+The fresh two-second BMW launch check showed the right-facing side-profile car and an increasing numerical counter during the intro. A follow-up live view showed the portfolio hero immediately after the configured two-second handoff.
+
+The profile-card update retains this launch flow and changes only the header identity mark: the JG mark is now a continuously rotating control that opens the portrait card on click, touch, or keyboard activation. The portrait artwork is a centered upper crop whose visible bounds exclude the lower-right watermark from the supplied source image.
+
+The desktop preview preserved the complete cinematic portfolio layout and the header identity control. The mobile preview preserved the BMW launch sequence and its visible sound/skip controls at a 375 px viewport; the rotating header trigger uses a touch-safe button and the portrait card width is constrained to the available viewport.

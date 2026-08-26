@@ -48,6 +48,7 @@ function ArrowUpRightIcon({ size = 14, color = "currentColor" }) {
 }
 
 const RESUME_DATA_URL = "/manus-storage/Jeevan_Resume_f783bfa1.pdf";
+const PROFILE_CARD_IMAGE = "/manus-storage/jeevan-profile-card-crop_9a99806a.png";
 const LINKS = {
   github: "https://github.com/Jeevan2401",
   linkedin: "https://www.linkedin.com/in/jeevan-g-42a264373/",
@@ -746,6 +747,7 @@ export default function Portfolio() {
   const [loaded, setLoaded] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileCardOpen, setProfileCardOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [formErrors, setFormErrors] = useState({ name: "", email: "", message: "" });
   const [touched, setTouched] = useState({ name: false, email: false, message: false });
@@ -842,8 +844,35 @@ export default function Portfolio() {
         .display { font-family: 'Space Grotesk', sans-serif; }
         ::selection { background: ${ACCENT}; color: #0a0a0b; }
         a { color: inherit; text-decoration: none; }
-        .brand-mark { box-shadow: 5px 5px 0 #e0322c2b, inset 0 0 0 1px #ffffff0c; }
-        .brand-mark::after { content: ''; position: absolute; right: -2px; bottom: 5px; width: 16px; height: 2px; background: ${ACCENT}; box-shadow: -8px -5px 0 #f2f0ec; opacity: .9; }
+        .identity-trigger { width: 34px; height: 34px; padding: 0; border: 1px solid ${ACCENT}; color: ${ACCENT}; background: #0a0a0bcc; cursor: pointer; position: relative; isolation: isolate; box-shadow: 5px 5px 0 #e0322c2b, inset 0 0 0 1px #ffffff0c; }
+        .identity-trigger::after { content: ''; position: absolute; right: -2px; bottom: 5px; width: 16px; height: 2px; background: ${ACCENT}; box-shadow: -8px -5px 0 #f2f0ec; opacity: .9; pointer-events: none; }
+        .identity-trigger__coin { position: absolute; inset: 4px; display: grid; place-items: center; border: 1px solid #e0322c88; color: ${ACCENT}; font: 600 12px/1 'JetBrains Mono', monospace; letter-spacing: 1px; transform-style: preserve-3d; animation: identityOrbit 8s linear infinite; }
+        .identity-trigger:hover, .identity-trigger:focus-visible, .identity-trigger[aria-expanded='true'] { border-color: #f2f0ec; color: #f2f0ec; outline: none; box-shadow: 0 0 0 3px #e0322c33, 5px 5px 0 #e0322c55; }
+        .identity-trigger:active { transform: scale(.96); }
+        .identity-trigger__caption { position: absolute; left: 48px; top: 50%; color: #8b8b90; white-space: nowrap; opacity: 0; transform: translate(-4px, -50%); pointer-events: none; transition: opacity 160ms ease, transform 160ms cubic-bezier(.16,.84,.44,1); font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .12em; }
+        .identity-trigger:hover .identity-trigger__caption, .identity-trigger:focus-visible .identity-trigger__caption { opacity: 1; transform: translate(0, -50%); }
+        @keyframes identityOrbit { from { transform: rotate(-7deg); } to { transform: rotate(353deg); } }
+        @keyframes profileCardEnter { from { opacity: 0; transform: translateY(-10px) rotateX(-4deg) scale(.97); } to { opacity: 1; transform: translateY(0) rotateX(0) scale(1); } }
+        .profile-card { position: fixed; z-index: 75; top: 72px; left: 20px; width: min(292px, calc(100vw - 40px)); padding: 10px; overflow: hidden; background: linear-gradient(145deg, #171719 0%, #0b0b0c 65%); border: 1px solid #e0322caa; box-shadow: 14px 16px 0 #050506, 0 18px 50px #00000077, inset 0 0 0 1px #ffffff0b; animation: profileCardEnter 360ms cubic-bezier(.16,.84,.44,1) both; transform-origin: top left; }
+        .profile-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55; background: linear-gradient(112deg, transparent 0 42%, #e0322c1c 46%, transparent 53%), repeating-linear-gradient(0deg, transparent 0 22px, #ffffff05 23px 24px); }
+        .profile-card__topline, .profile-card__identity, .profile-card__stats, .profile-card__note { position: relative; z-index: 1; }
+        .profile-card__topline { display: flex; align-items: center; justify-content: space-between; min-height: 18px; color: #c9c9cc; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .14em; }
+        .profile-card__close { width: 24px; height: 24px; padding: 0; border: 1px solid #ffffff33; color: #b8b8bd; background: #0a0a0ba8; cursor: pointer; font: 500 12px/1 'JetBrains Mono', monospace; }
+        .profile-card__close:hover, .profile-card__close:focus-visible { color: #f2f0ec; border-color: ${ACCENT}; outline: none; }
+        .profile-card__art { position: relative; z-index: 1; margin-top: 9px; aspect-ratio: .93; overflow: hidden; border: 1px solid #ffffff20; background: #161618; }
+        .profile-card__art::before { content: 'JG // PROFILE'; position: absolute; z-index: 2; top: 9px; left: 9px; padding: 5px 6px; color: #f2f0ec; background: #0a0a0bd1; border-left: 2px solid ${ACCENT}; font: 500 8px/1 'JetBrains Mono', monospace; letter-spacing: .12em; }
+        .profile-card__art::after { content: ''; position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 52%, #050506dd 100%), linear-gradient(110deg, transparent 36%, #e0322c2b 55%, transparent 67%); mix-blend-mode: screen; }
+        .profile-card__art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; filter: contrast(1.02) saturate(.88); }
+        .profile-card__identity { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; margin: 12px 2px 0; }
+        .profile-card__name { margin: 0; color: #f2f0ec; font: 700 23px/.95 'Space Grotesk', sans-serif; letter-spacing: -.06em; }
+        .profile-card__rank { color: ${ACCENT}; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .12em; white-space: nowrap; }
+        .profile-card__role { position: relative; z-index: 1; display: block; margin: 7px 2px 0; color: #b8b8bd; font: 500 9px/1.45 'JetBrains Mono', monospace; letter-spacing: .08em; }
+        .profile-card__stats { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+        .profile-card__stat { min-width: 0; padding: 8px; border: 1px solid #ffffff18; background: #ffffff05; }
+        .profile-card__stat b { display: block; color: ${ACCENT}; font: 600 8px/1 'JetBrains Mono', monospace; letter-spacing: .1em; }
+        .profile-card__stat span { display: block; margin-top: 5px; color: #e4e4e6; font: 500 10px/1.2 'JetBrains Mono', monospace; letter-spacing: .04em; }
+        .profile-card__note { display: block; margin: 11px 2px 1px; color: #7f7f85; font: 500 8px/1.35 'JetBrains Mono', monospace; letter-spacing: .08em; }
+        .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         .portfolio-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background: linear-gradient(105deg, transparent 0 42%, #e0322c0a 48%, transparent 58%), repeating-linear-gradient(0deg, transparent 0 28px, #ffffff05 29px 30px); mix-blend-mode: screen; }
         .hero-signal { position: absolute; z-index: 1; top: 14%; right: 6vw; width: min(34vw, 460px); aspect-ratio: 1.12; pointer-events: none; opacity: .42; border-right: 1px solid #e0322c55; border-bottom: 1px solid #e0322c55; background: linear-gradient(135deg, transparent 0 35%, #e0322c0d 35% 36%, transparent 36% 62%, #ffffff08 62% 63%, transparent 63%), repeating-linear-gradient(90deg, transparent 0 48px, #ffffff06 49px 50px); }
         .hero-signal::before { content: attr(data-mark); position: absolute; right: 8%; top: 6%; color: ${ACCENT}; font: 700 clamp(110px, 17vw, 260px)/.78 'Space Grotesk', sans-serif; letter-spacing: -.12em; opacity: .12; transform: skewX(-10deg); }
@@ -880,7 +909,8 @@ export default function Portfolio() {
           .hero-copy { max-width: 31ch !important; margin-top: 18px !important; font-size: 14px !important; line-height: 1.55 !important; }
           .hero-actions { gap: 10px !important; margin-top: 22px !important; }
           .hero-actions button { padding: 12px 14px !important; font-size: 10px !important; }
-          .brand-mark { width: 38px !important; height: 38px !important; }
+          .identity-trigger { width: 38px !important; height: 38px !important; }
+          .profile-card { top: 74px; left: 14px; width: min(286px, calc(100vw - 28px)); }
           .hero-signal { right: -8vw; top: 8%; width: 66vw; opacity: .3; }
         }
         button, a.cursor-hover, .send-btn, input, textarea {
@@ -959,6 +989,11 @@ export default function Portfolio() {
 
         @media (pointer: coarse) {
           .hide-mobile-cursor-fx { display: none !important; }
+          .identity-trigger__caption { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .identity-trigger__coin { animation: none; transform: rotate(-7deg); }
+          .profile-card { animation-duration: 1ms; }
         }
       `}</style>
 
@@ -995,30 +1030,18 @@ export default function Portfolio() {
           backdropFilter: "blur(2px)",
         }}
       >
-        <Magnetic strength={14}>
-          <div
-            className="mono brand-mark"
-            style={{
-              width: 34,
-              height: 34,
-              border: `1px solid ${ACCENT}`,
-              color: ACCENT,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              fontSize: 13,
-              fontWeight: 600,
-              letterSpacing: 1,
-              borderRadius: 5,
-              position: "relative",
-              overflow: "hidden",
-              transform: "rotate(-7deg)",
-            }}
+        <Magnetic strength={8}>
+          <button
+            type="button"
+            className="identity-trigger"
+            aria-expanded={profileCardOpen}
+            aria-controls="profile-card"
+            aria-label={profileCardOpen ? "Close Jeevan profile card" : "Open Jeevan profile card"}
+            onClick={() => setProfileCardOpen((open) => !open)}
           >
-            <span style={{ position: "relative", zIndex: 1 }}>JG</span>
-            <span aria-hidden style={{ position: "absolute", left: 4, bottom: 5, width: 16, height: 2, background: ACCENT, boxShadow: `0 -5px 0 #f2f0ec, 7px -10px 0 ${ACCENT}` }} />
-            <span aria-hidden style={{ position: "absolute", top: 4, right: 4, width: 4, height: 9, borderTop: `1px solid ${ACCENT}`, borderRight: `1px solid ${ACCENT}` }} />
-          </div>
+            <span className="identity-trigger__coin" aria-hidden>JG</span>
+            <span className="identity-trigger__caption" aria-hidden>PROFILE CARD</span>
+          </button>
         </Magnetic>
         <Magnetic strength={10} as="button" onClick={() => setMenuOpen((v) => !v)}
           className="mono"
@@ -1035,6 +1058,28 @@ export default function Portfolio() {
           {menuOpen ? "CLOSE" : "MENU"}
         </Magnetic>
       </header>
+
+      {profileCardOpen && (
+        <aside id="profile-card" className="profile-card" aria-label="Jeevan profile card">
+          <div className="profile-card__topline">
+            <span>DEVELOPER PROFILE // 01</span>
+            <button type="button" className="profile-card__close" onClick={() => setProfileCardOpen(false)} aria-label="Close profile card">×</button>
+          </div>
+          <div className="profile-card__art">
+            <img src={PROFILE_CARD_IMAGE} alt="Portrait of Jeevan G." />
+          </div>
+          <div className="profile-card__identity">
+            <h2 className="profile-card__name">Jeevan G.</h2>
+            <span className="profile-card__rank">JG // 01</span>
+          </div>
+          <span className="profile-card__role">WEBSITE DEVELOPER · COMPUTER SCIENCE STUDENT</span>
+          <div className="profile-card__stats" aria-label="Profile specialties">
+            <div className="profile-card__stat"><b>BUILD TYPE</b><span>Websites</span></div>
+            <div className="profile-card__stat"><b>FOCUS</b><span>Responsive UX</span></div>
+          </div>
+          <span className="profile-card__note">TAP THE JG MARK AGAIN TO RETRACT</span>
+        </aside>
+      )}
 
       {/* ---------- FULLSCREEN MENU ---------- */}
       <div

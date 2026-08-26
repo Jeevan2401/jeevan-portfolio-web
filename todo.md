@@ -1,5 +1,9 @@
 # Active Enhancement Checklist
 
+- [x] Replace the idle JG mark with a continuously rotating interactive profile-card object.
+- [x] Prepare and use a portrait crop that excludes the source watermark from the visible card art.
+- [x] Add click, touch, keyboard, and reduced-motion-safe portrait reveal behavior.
+- [x] Validate the profile card on desktop and mobile without redesigning the existing portfolio.
 - [x] Set the active BMW launch and numerical loader to complete in exactly 2.0 seconds.
 - [x] Align the car pass and exit fade so the hero appears immediately after 0–100 completion.
 - [x] Validate the complete two-second sequence and handoff.
