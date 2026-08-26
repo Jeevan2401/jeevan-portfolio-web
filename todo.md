@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Add a subtle red technical glow around the profile-card boundary.
+- [x] Trace and remove the remaining root-level overflow and touch-action lock after the BMW intro completes. (Post-intro root/body overflow, overscroll, and touch-action now resolve to normal scrollable values and are re-applied after BMW cleanup.)
+- [x] Verify scrolling works while the profile card is open on desktop and mobile.
 - [x] Remove the profile card’s pointer-driven hover tilt and glare effect.
 - [x] Preserve card flipping, sharing, audio feedback, and touch-safe scrolling.
 - [x] Validate the simplified profile-card behavior on desktop and mobile.

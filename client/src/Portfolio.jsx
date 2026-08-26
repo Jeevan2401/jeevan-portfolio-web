@@ -810,41 +810,39 @@ export default function Portfolio() {
   };
 
   useEffect(() => {
-    document.documentElement.style.overflow = introDone ? "" : "hidden";
-    document.body.style.overflow = introDone ? "" : "hidden";
-    if (!introDone) return;
-    const t = setTimeout(() => setLoaded(true), 150);
-    return () => {
-      clearTimeout(t);
-      document.documentElement.style.overflow = "";
-      document.body.style.overflow = "";
-    };
-  }, [introDone]);
-
-  useEffect(() => {
-    if (!introDone || !profileCardOpen) return;
     const root = document.documentElement;
     const body = document.body;
-    const saved = {
-      rootOverflowY: root.style.overflowY,
-      rootOverscrollY: root.style.overscrollBehaviorY,
-      bodyOverflowY: body.style.overflowY,
-      bodyOverscrollY: body.style.overscrollBehaviorY,
-      bodyTouchAction: body.style.touchAction,
+    const restorePageScroll = () => {
+      root.style.overflow = "auto";
+      root.style.overflowX = "hidden";
+      root.style.overflowY = "auto";
+      root.style.overscrollBehavior = "auto";
+      body.style.overflow = "auto";
+      body.style.overflowX = "hidden";
+      body.style.overflowY = "auto";
+      body.style.overscrollBehavior = "auto";
+      body.style.touchAction = "auto";
     };
-    root.style.overflowY = "auto";
-    root.style.overscrollBehaviorY = "auto";
-    body.style.overflowY = "auto";
-    body.style.overscrollBehaviorY = "auto";
-    body.style.touchAction = "pan-y";
+    if (!introDone) {
+      root.style.overflow = "hidden";
+      root.style.overflowY = "hidden";
+      root.style.overscrollBehavior = "none";
+      body.style.overflow = "hidden";
+      body.style.overflowY = "hidden";
+      body.style.overscrollBehavior = "none";
+      body.style.touchAction = "none";
+      return;
+    }
+    restorePageScroll();
+    const unlockFrame = requestAnimationFrame(restorePageScroll);
+    const unlockTimer = setTimeout(restorePageScroll, 90);
+    const t = setTimeout(() => setLoaded(true), 150);
     return () => {
-      root.style.overflowY = saved.rootOverflowY;
-      root.style.overscrollBehaviorY = saved.rootOverscrollY;
-      body.style.overflowY = saved.bodyOverflowY;
-      body.style.overscrollBehaviorY = saved.bodyOverscrollY;
-      body.style.touchAction = saved.bodyTouchAction;
+      cancelAnimationFrame(unlockFrame);
+      clearTimeout(unlockTimer);
+      clearTimeout(t);
     };
-  }, [introDone, profileCardOpen]);
+  }, [introDone]);
 
 
   const scrollTo = (id) => {
@@ -951,7 +949,7 @@ export default function Portfolio() {
         .identity-trigger:hover .identity-trigger__caption, .identity-trigger:focus-visible .identity-trigger__caption { opacity: 1; transform: translate(0, -50%); }
         @keyframes identityOrbit { from { transform: rotate(-7deg); } to { transform: rotate(353deg); } }
         @keyframes profileCardEnter { from { opacity: 0; transform: translateY(-10px) rotateX(-4deg) scale(.97); } to { opacity: 1; transform: translateY(0) rotateX(0) scale(1); } }
-        .profile-card { position: fixed; z-index: 75; top: 72px; left: 20px; width: min(292px, calc(100vw - 40px)); padding: 10px; overflow: hidden; background: linear-gradient(145deg, #171719 0%, #0b0b0c 65%); border: 1px solid #e0322caa; box-shadow: 14px 16px 0 #050506, 0 18px 50px #00000077, inset 0 0 0 1px #ffffff0b; animation: profileCardEnter 360ms cubic-bezier(.16,.84,.44,1) both; transform-origin: top left; touch-action: pan-y; overscroll-behavior: auto; }
+        .profile-card { position: fixed; z-index: 75; top: 72px; left: 20px; width: min(292px, calc(100vw - 40px)); padding: 10px; overflow: hidden; background: linear-gradient(145deg, #171719 0%, #0b0b0c 65%); border: 1px solid #e0322cdd; box-shadow: 0 0 0 1px #e0322c22, 0 0 20px #e0322c28, 14px 16px 0 #050506, 0 18px 50px #00000077, inset 0 0 0 1px #ffffff0b; animation: profileCardEnter 360ms cubic-bezier(.16,.84,.44,1) both; transform-origin: top left; touch-action: pan-y; overscroll-behavior: auto; }
         .profile-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55; background: linear-gradient(112deg, transparent 0 42%, #e0322c1c 46%, transparent 53%), repeating-linear-gradient(0deg, transparent 0 22px, #ffffff05 23px 24px); }
         .profile-card__topline { position: relative; z-index: 3; }
         .profile-card__topline { display: flex; align-items: center; justify-content: space-between; min-height: 18px; color: #c9c9cc; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .14em; }
