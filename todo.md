@@ -1,5 +1,9 @@
 # Active Enhancement Checklist
 
+- [x] Rename the E2E capability label to Design to Launch.
+- [x] Review and refine the complete contact module, including the WhatsApp action and all contact paths.
+- [x] Check whether the constrained BMW video can be generated; otherwise document and apply the strongest viable animation approach. (Deferred video generation: daily quota unavailable; true-alpha CSS fallback remains active.)
+- [x] Validate the updated labels, contact experience, and BMW intro behavior on desktop and mobile.
 - [x] Create a tightly cropped BMW cutout with the studio background and negative space removed.
 - [x] Replace the rectangular background image in the CSS launch with the clean car cutout.
 - [x] Verify the intro reads as a moving car rather than a moving picture on desktop and mobile.

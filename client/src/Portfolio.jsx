@@ -721,7 +721,7 @@ const EXPERIENCE = [
 const STATS = [
   { value: "04", label: "PROJECT LOGS" },
   { value: "WEB", label: "RESPONSIVE FIRST" },
-  { value: "E2E", label: "IDEA TO HANDOFF" },
+  { value: "DESIGN", label: "TO LAUNCH" },
 ];
 
 function getFormError(field, value) {
@@ -859,6 +859,9 @@ export default function Portfolio() {
         .contact-module::before, .contact-module::after { content: ''; position: absolute; width: 18px; height: 12px; pointer-events: none; opacity: .62; }
         .contact-module::before { left: 12px; top: 12px; border-top: 1px solid ${ACCENT}; border-left: 1px solid ${ACCENT}; }
         .contact-module::after { right: 12px; bottom: 12px; border-right: 1px solid ${ACCENT}; border-bottom: 1px solid ${ACCENT}; }
+        .contact-whatsapp { transition: background 180ms ease, border-color 180ms ease, transform 160ms cubic-bezier(.16,.84,.44,1); }
+        .contact-whatsapp:hover, .contact-whatsapp:focus-visible { background: ${ACCENT}24 !important; border-color: ${ACCENT} !important; outline: none; }
+        .contact-whatsapp:active { transform: scale(.98); }
         @media (max-width: 640px) {
           .contact-grid { grid-template-columns: 1fr !important; }
           .contact-form-row { grid-template-columns: 1fr !important; }
@@ -1555,7 +1558,6 @@ export default function Portfolio() {
                   { icon: GitHubIcon, href: LINKS.github, label: "GitHub" },
                   { icon: LinkedInIcon, href: LINKS.linkedin, label: "LinkedIn" },
                   { icon: EmailIcon, href: LINKS.email, label: "Email" },
-                  { icon: WhatsAppIcon, href: LINKS.whatsapp, label: "WhatsApp" },
                 ].map((s) => (
                   <Magnetic key={s.label} strength={16} as="a" href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"
                     className="cursor-hover"
@@ -1573,8 +1575,11 @@ export default function Portfolio() {
                   </Magnetic>
                 ))}
               </div>
+              <div className="mono" style={{ color: "#8b8b90", fontSize: 10, letterSpacing: 1.25, lineHeight: 1.55, marginBottom: 10 }}>
+                FAST PROJECT BRIEF
+              </div>
               <Magnetic strength={12} as="a" href={LINKS.whatsapp} target="_blank" rel="noreferrer"
-                className="mono cursor-hover"
+                className="mono cursor-hover contact-whatsapp"
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -1591,7 +1596,7 @@ export default function Portfolio() {
                 }}
               >
                 <WhatsAppIcon size={16} color={ACCENT} />
-                CHAT ON WHATSAPP ↗
+                WHATSAPP // QUICK PROJECT BRIEF ↗
               </Magnetic>
               <Magnetic strength={12} as="a" href={RESUME_DATA_URL} download="Jeevan_Resume.pdf"
                 className="mono cursor-hover send-btn"
@@ -1628,6 +1633,9 @@ export default function Portfolio() {
                 gap: 14,
               }}
             >
+              <div className="mono" style={{ color: "#8b8b90", fontSize: 10, letterSpacing: 1.25, marginBottom: 2 }}>
+                PROJECT BRIEF // RESPONSE BY EMAIL
+              </div>
               <div className="contact-form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
                 <div>
                   <input
