@@ -647,6 +647,14 @@ const NAV = [
 
 const PROJECTS = [
   {
+    tag: "Website Development · Client Project",
+    title: "YOYO Fitness Center",
+    blurb:
+      "A fitness-center website currently in development. Project details, final features, and the live release will be shared soon.",
+    stack: ["Responsive Website", "Modern UI", "In Progress"],
+    status: "COMING SOON",
+  },
+  {
     tag: "AI · Desktop · BUILT PROJECT",
     title: "R.A.V.A.N.A.",
     blurb:
@@ -703,25 +711,56 @@ const STATS = [
   { n: 3, suffix: "", label: "Stacks Mastered" },
 ];
 
+function getFormError(field, value) {
+  const trimmed = value.trim();
+  if (!trimmed) return `${field[0].toUpperCase()}${field.slice(1)} is required.`;
+  if (field === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmed)) return "Enter a valid email address.";
+  if (field === "message" && trimmed.length < 12) return "Add a little more detail so I can understand the idea.";
+  return "";
+}
+
+function SectionRouteMark({ align = "right" }) {
+  return (
+    <div aria-hidden style={{ position: "absolute", top: 30, [align]: "6vw", display: "flex", gap: 4, opacity: 0.75, pointerEvents: "none" }}>
+      <span style={{ display: "block", width: 24, height: 2, background: ACCENT, boxShadow: "0 7px 0 #ffffff33" }} />
+      <span style={{ display: "block", width: 7, height: 9, borderLeft: `1px solid ${ACCENT}`, borderBottom: `1px solid ${ACCENT}` }} />
+    </div>
+  );
+}
+
 // ================= Main =================
 export default function Portfolio() {
   const [loaded, setLoaded] = useState(false);
   const [introDone, setIntroDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
-  const [formStatus, setFormStatus] = useState("idle"); // idle | sending | success | error
+  const [formErrors, setFormErrors] = useState({ name: "", email: "", message: "" });
+  const [touched, setTouched] = useState({ name: false, email: false, message: false });
+  const [formStatus, setFormStatus] = useState("idle"); // idle | validation | sending | success | error
   const name = useGlitchText("JEEVAN", { active: loaded, speed: 26, loopEvery: 9000 });
   const progress = useScrollProgress();
   const parallax = useMouseParallax(24);
 
   const handleFormChange = (e) => {
-    setForm((f) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name: field, value } = e.target;
+    setForm((f) => ({ ...f, [field]: value }));
+    if (touched[field]) setFormErrors((errors) => ({ ...errors, [field]: getFormError(field, value) }));
+    if (formStatus !== "idle") setFormStatus("idle");
+  };
+
+  const handleFieldBlur = (e) => {
+    const { name: field, value } = e.target;
+    setTouched((fields) => ({ ...fields, [field]: true }));
+    setFormErrors((errors) => ({ ...errors, [field]: getFormError(field, value) }));
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (!form.name || !form.email || !form.message) {
-      setFormStatus("error");
+    const nextErrors = Object.keys(form).reduce((errors, field) => ({ ...errors, [field]: getFormError(field, form[field]) }), {});
+    setTouched({ name: true, email: true, message: true });
+    setFormErrors(nextErrors);
+    if (Object.values(nextErrors).some(Boolean)) {
+      setFormStatus("validation");
       return;
     }
     setFormStatus("sending");
@@ -741,6 +780,8 @@ export default function Portfolio() {
       if (data.success) {
         setFormStatus("success");
         setForm({ name: "", email: "", message: "" });
+        setTouched({ name: false, email: false, message: false });
+        setFormErrors({ name: "", email: "", message: "" });
       } else {
         setFormStatus("error");
       }
@@ -809,6 +850,14 @@ export default function Portfolio() {
 
         input, textarea { font-family: 'Inter', sans-serif; transition: border-color 0.25s ease, box-shadow 0.25s ease; }
         input:focus, textarea:focus { outline: none; border-color: ${ACCENT} !important; box-shadow: 0 0 0 3px ${ACCENT}22; }
+        .field-message { min-height: 17px; margin-top: 6px; color: #8b8b90; font: 500 10.5px/1.4 'JetBrains Mono', monospace; letter-spacing: .1px; }
+        .field-message--error { color: ${ACCENT}; }
+        @keyframes formSuccessIn {
+          from { opacity: 0; transform: translateY(8px) scale(.98); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .form-success { display: flex; align-items: center; gap: 9px; padding: 11px 13px; border: 1px solid #3ddc844d; background: #3ddc8410; animation: formSuccessIn .42s cubic-bezier(.16,.84,.44,1) both; }
+        .form-success__mark { display: grid; place-items: center; width: 18px; height: 18px; flex: 0 0 auto; border-radius: 50%; background: #3ddc84; color: #0a0a0b; font-size: 12px; font-weight: 700; }
 
         @keyframes flicker {
           0%, 100% { opacity: 1; } 92% { opacity: 1; } 93% { opacity: 0.35; } 94% { opacity: 1; }
@@ -896,7 +945,7 @@ export default function Portfolio() {
       >
         <Magnetic strength={14}>
           <div
-            className="mono spin-slow"
+            className="mono"
             style={{
               width: 34,
               height: 34,
@@ -915,7 +964,8 @@ export default function Portfolio() {
             }}
           >
             <span style={{ position: "relative", zIndex: 1 }}>JG</span>
-            <span aria-hidden style={{ position: "absolute", left: -2, bottom: 5, width: 13, height: 2, background: ACCENT, boxShadow: `8px -4px 0 ${ACCENT}` }} />
+            <span aria-hidden style={{ position: "absolute", left: 4, bottom: 5, width: 16, height: 2, background: ACCENT, boxShadow: `0 -5px 0 #f2f0ec, 7px -10px 0 ${ACCENT}` }} />
+            <span aria-hidden style={{ position: "absolute", top: 4, right: 4, width: 4, height: 9, borderTop: `1px solid ${ACCENT}`, borderRight: `1px solid ${ACCENT}` }} />
           </div>
         </Magnetic>
         <Magnetic strength={10} as="button" onClick={() => setMenuOpen((v) => !v)}
@@ -1104,7 +1154,7 @@ export default function Portfolio() {
               fontWeight: 600,
             }}
           >
-            EXPLORE WORK →
+            OPEN PROJECT LOG →
           </Magnetic>
           <Magnetic strength={20} as="button" onClick={() => scrollTo("contact")}
             className="mono"
@@ -1118,7 +1168,7 @@ export default function Portfolio() {
               cursor: "pointer",
             }}
           >
-            LET'S TALK
+            START A WEBSITE
           </Magnetic>
         </div>
 
@@ -1215,7 +1265,8 @@ export default function Portfolio() {
       </section>
 
       {/* ---------- WORK ---------- */}
-      <section id="work" style={{ padding: "10vh 6vw", borderTop: "1px solid #ffffff14" }}>
+      <section id="work" style={{ padding: "10vh 6vw", borderTop: "1px solid #ffffff14", position: "relative", overflow: "hidden" }}>
+        <SectionRouteMark />
         <Reveal>
           <div className="mono" style={{ color: ACCENT, fontSize: 12, letterSpacing: 3, marginBottom: 10 }}>
             — FEATURED WORK
@@ -1254,7 +1305,11 @@ export default function Portfolio() {
                       <div className="mono" style={{ fontSize: 11, color: ACCENT, letterSpacing: 1.5 }}>
                         {p.tag}
                       </div>
-                      {p.github && (
+                      {p.status ? (
+                        <span className="mono" style={{ color: "#f2f0ec", border: `1px solid ${ACCENT}88`, background: `${ACCENT}12`, padding: "5px 7px", fontSize: 9, letterSpacing: 1.1 }}>
+                          {p.status}
+                        </span>
+                      ) : p.github && (
                         <a
                           href={p.github}
                           target="_blank"
@@ -1338,7 +1393,8 @@ export default function Portfolio() {
       </section>
 
       {/* ---------- EXPERIENCE ---------- */}
-      <section id="experience" style={{ padding: "10vh 6vw", borderTop: "1px solid #ffffff14" }}>
+      <section id="experience" style={{ padding: "10vh 6vw", borderTop: "1px solid #ffffff14", position: "relative", overflow: "hidden" }}>
+        <SectionRouteMark align="left" />
         <Reveal>
           <div className="mono" style={{ color: ACCENT, fontSize: 12, letterSpacing: 3, marginBottom: 10 }}>
             — WHERE THE WORK HAPPENS
@@ -1408,7 +1464,8 @@ export default function Portfolio() {
       </section>
 
       {/* ---------- CONTACT ---------- */}
-      <section id="contact" style={{ padding: "10vh 6vw", borderTop: "1px solid #ffffff14" }}>
+      <section id="contact" style={{ padding: "10vh 6vw", borderTop: "1px solid #ffffff14", position: "relative", overflow: "hidden" }}>
+        <SectionRouteMark />
         <Reveal>
           <div className="mono" style={{ color: ACCENT, fontSize: 12, letterSpacing: 3, marginBottom: 10 }}>
             — GET IN TOUCH
@@ -1478,7 +1535,7 @@ export default function Portfolio() {
                   marginTop: 6,
                 }}
               >
-                Know My Full Story →
+                OPEN RÉSUMÉ FILE →
               </Magnetic>
             </div>
           </Reveal>
@@ -1486,6 +1543,7 @@ export default function Portfolio() {
           <Reveal delay={140}>
             <form
               onSubmit={handleFormSubmit}
+              noValidate
               style={{
                 border: "1px solid #ffffff1a",
                 background: "#131315",
@@ -1496,49 +1554,70 @@ export default function Portfolio() {
               }}
             >
               <div className="contact-form-row" style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 }}>
-                <input
-                  name="name"
-                  value={form.name}
-                  onChange={handleFormChange}
-                  placeholder="Your name"
-                  style={{
-                    background: "#0a0a0b",
-                    border: "1px solid #ffffff22",
-                    color: "#f2f0ec",
-                    padding: "12px 14px",
-                    fontSize: 14,
-                  }}
-                />
-                <input
-                  name="email"
-                  type="email"
-                  value={form.email}
-                  onChange={handleFormChange}
-                  placeholder="Your email"
-                  style={{
-                    background: "#0a0a0b",
-                    border: "1px solid #ffffff22",
-                    color: "#f2f0ec",
-                    padding: "12px 14px",
-                    fontSize: 14,
-                  }}
-                />
+                <div>
+                  <input
+                    name="name"
+                    value={form.name}
+                    onChange={handleFormChange}
+                    onBlur={handleFieldBlur}
+                    placeholder="Your name"
+                    aria-invalid={Boolean(touched.name && formErrors.name)}
+                    aria-describedby="name-feedback"
+                    style={{
+                      width: "100%",
+                      background: "#0a0a0b",
+                      border: `1px solid ${touched.name && formErrors.name ? ACCENT : "#ffffff22"}`,
+                      color: "#f2f0ec",
+                      padding: "12px 14px",
+                      fontSize: 14,
+                    }}
+                  />
+                  <div id="name-feedback" className={`field-message ${touched.name && formErrors.name ? "field-message--error" : ""}`} aria-live="polite">{touched.name ? formErrors.name : ""}</div>
+                </div>
+                <div>
+                  <input
+                    name="email"
+                    type="email"
+                    value={form.email}
+                    onChange={handleFormChange}
+                    onBlur={handleFieldBlur}
+                    placeholder="Your email"
+                    aria-invalid={Boolean(touched.email && formErrors.email)}
+                    aria-describedby="email-feedback"
+                    style={{
+                      width: "100%",
+                      background: "#0a0a0b",
+                      border: `1px solid ${touched.email && formErrors.email ? ACCENT : "#ffffff22"}`,
+                      color: "#f2f0ec",
+                      padding: "12px 14px",
+                      fontSize: 14,
+                    }}
+                  />
+                  <div id="email-feedback" className={`field-message ${touched.email && formErrors.email ? "field-message--error" : ""}`} aria-live="polite">{touched.email ? formErrors.email : ""}</div>
+                </div>
               </div>
-              <textarea
-                name="message"
-                value={form.message}
-                onChange={handleFormChange}
+              <div>
+                <textarea
+                  name="message"
+                  value={form.message}
+                  onChange={handleFormChange}
+                  onBlur={handleFieldBlur}
                   placeholder="Have an idea for a website? Let's turn it into something people want to use."
-                rows={5}
-                style={{
-                  background: "#0a0a0b",
-                  border: "1px solid #ffffff22",
-                  color: "#f2f0ec",
-                  padding: "12px 14px",
-                  fontSize: 14,
-                  resize: "vertical",
-                }}
-              />
+                  aria-invalid={Boolean(touched.message && formErrors.message)}
+                  aria-describedby="message-feedback"
+                  rows={5}
+                  style={{
+                    width: "100%",
+                    background: "#0a0a0b",
+                    border: `1px solid ${touched.message && formErrors.message ? ACCENT : "#ffffff22"}`,
+                    color: "#f2f0ec",
+                    padding: "12px 14px",
+                    fontSize: 14,
+                    resize: "vertical",
+                  }}
+                />
+                <div id="message-feedback" className={`field-message ${touched.message && formErrors.message ? "field-message--error" : ""}`} aria-live="polite">{touched.message ? formErrors.message : ""}</div>
+              </div>
               <Magnetic strength={14} as="button"
                 type="submit"
                 disabled={formStatus === "sending"}
@@ -1559,13 +1638,14 @@ export default function Portfolio() {
                 {formStatus === "sending" ? "SENDING..." : "SEND MESSAGE →"}
               </Magnetic>
               {formStatus === "success" && (
-                <div className="mono" style={{ fontSize: 12.5, color: "#3ddc84", letterSpacing: 0.3 }}>
-                  ✓ Message sent — I'll get back to you soon.
+                <div className="form-success mono" role="status" aria-live="polite" style={{ fontSize: 12, color: "#d8ffe9", letterSpacing: 0.3 }}>
+                  <span className="form-success__mark" aria-hidden="true">✓</span>
+                  <span>Message received — I’ll get back to you soon.</span>
                 </div>
               )}
               {formStatus === "error" && (
                 <div className="mono" style={{ fontSize: 12.5, color: ACCENT, letterSpacing: 0.3 }}>
-                  ✕ Please fill every field, or try again in a moment.
+                  ✕ That did not send. Please try again in a moment.
                 </div>
               )}
             </form>

@@ -18,6 +18,13 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  const startExit = (reducedMotion = false) => {
+    setLeaving(true);
+    if (finishTimer.current) clearTimeout(finishTimer.current);
+    if (exitTimer.current) clearTimeout(exitTimer.current);
+    exitTimer.current = setTimeout(onComplete, reducedMotion ? 320 : 920);
+  };
+
   useEffect(() => {
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const reducedMotion = motionQuery.matches;
@@ -35,8 +42,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         return;
       }
 
-      finishTimer.current = setTimeout(() => setLeaving(true), reducedMotion ? 50 : 260);
-      exitTimer.current = setTimeout(onComplete, reducedMotion ? 260 : 860);
+      finishTimer.current = setTimeout(() => startExit(reducedMotion), reducedMotion ? 50 : 260);
     };
 
     frame = requestAnimationFrame(tick);
@@ -67,9 +73,11 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           background: #080809;
           color: #f2f0ec;
           isolation: isolate;
-          transition: opacity 600ms cubic-bezier(.16,.84,.44,1), visibility 600ms step-end;
+          transition: opacity 860ms cubic-bezier(.16,.84,.44,1), transform 860ms cubic-bezier(.16,.84,.44,1), filter 860ms cubic-bezier(.16,.84,.44,1), visibility 860ms step-end;
         }
-        .bmw-intro--leaving { opacity: 0; visibility: hidden; pointer-events: none; }
+        .bmw-intro--leaving { opacity: 0; transform: scale(1.018); filter: blur(1.4px); visibility: hidden; pointer-events: none; }
+        .bmw-intro--leaving .bmw-intro__reading { opacity: 0; transform: translateY(-16px); transition: opacity 460ms ease, transform 560ms cubic-bezier(.16,.84,.44,1); }
+        .bmw-intro--leaving .bmw-intro__speedline { opacity: 0; transform: skewY(-2deg) scaleX(1.15); transition: opacity 400ms ease, transform 720ms cubic-bezier(.16,.84,.44,1); }
         .bmw-intro::before {
           content: "";
           position: absolute;
@@ -192,7 +200,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         <p className="bmw-intro__name" style={{ opacity: nameOpacity, transform: `translateY(${(1 - nameOpacity) * 10}px)` }}>JEEVAN</p>
         <div className="bmw-intro__rule" aria-hidden="true"><b style={{ transform: `scaleX(${progress / 100})` }} /></div>
       </div>
-      <button type="button" className="bmw-intro__skip" onClick={onComplete}>SKIP INTRO</button>
+      <button type="button" className="bmw-intro__skip" onClick={() => startExit(window.matchMedia("(prefers-reduced-motion: reduce)").matches)}>SKIP INTRO</button>
     </section>
   );
 }
