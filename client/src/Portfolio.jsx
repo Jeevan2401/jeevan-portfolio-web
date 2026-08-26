@@ -31,6 +31,14 @@ function EmailIcon({ size = 16, color = "currentColor" }) {
     </svg>
   );
 }
+function WhatsAppIcon({ size = 16, color = "currentColor" }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M20.3 11.7a8.2 8.2 0 0 1-12.1 7.2L4 20l1.2-4.1A8.2 8.2 0 1 1 20.3 11.7Z" />
+      <path d="M8.7 8.1c.2-.4.4-.4.7-.4h.6c.2 0 .4.1.5.4l.7 1.6c.1.3.1.5-.1.7l-.5.7c.5.9 1.2 1.6 2.2 2.1l.6-.5c.2-.2.5-.2.7-.1l1.6.8c.2.1.3.3.3.5v.6c0 .3 0 .5-.4.7-.4.2-1.2.4-2.1.1-1.1-.3-2.4-1.1-3.5-2.2-1.1-1.1-1.9-2.4-2.2-3.5-.3-.9-.1-1.7.1-2.1Z" />
+    </svg>
+  );
+}
 function ArrowUpRightIcon({ size = 14, color = "currentColor" }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -44,6 +52,7 @@ const LINKS = {
   github: "https://github.com/Jeevan2401",
   linkedin: "https://www.linkedin.com/in/jeevan-g-42a264373/",
   email: "mailto:jeevan24012007@gmail.com",
+  whatsapp: "https://wa.me/917358419838?text=Hi%20Jeevan%2C%20I%27m%20interested%20in%20a%20website%20project.",
 };
 
 // Get your free access key at https://web3forms.com (takes ~30 seconds, just needs your email)
@@ -1536,6 +1545,7 @@ export default function Portfolio() {
                   { icon: GitHubIcon, href: LINKS.github, label: "GitHub" },
                   { icon: LinkedInIcon, href: LINKS.linkedin, label: "LinkedIn" },
                   { icon: EmailIcon, href: LINKS.email, label: "Email" },
+                  { icon: WhatsAppIcon, href: LINKS.whatsapp, label: "WhatsApp" },
                 ].map((s) => (
                   <Magnetic key={s.label} strength={16} as="a" href={s.href} target={s.href.startsWith("http") ? "_blank" : undefined} rel="noreferrer"
                     className="cursor-hover"
@@ -1553,6 +1563,26 @@ export default function Portfolio() {
                   </Magnetic>
                 ))}
               </div>
+              <Magnetic strength={12} as="a" href={LINKS.whatsapp} target="_blank" rel="noreferrer"
+                className="mono cursor-hover"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: 9,
+                  width: "100%",
+                  border: `1px solid ${ACCENT}88`,
+                  background: `${ACCENT}12`,
+                  color: "#f2f0ec",
+                  padding: "12px 14px",
+                  fontSize: 11,
+                  letterSpacing: 1.1,
+                  marginBottom: 10,
+                }}
+              >
+                <WhatsAppIcon size={16} color={ACCENT} />
+                CHAT ON WHATSAPP ↗
+              </Magnetic>
               <Magnetic strength={12} as="a" href={RESUME_DATA_URL} download="Jeevan_Resume.pdf"
                 className="mono cursor-hover send-btn"
                 style={{

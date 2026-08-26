@@ -1,5 +1,7 @@
 # Active Enhancement Checklist
 
+- [x] Add a direct WhatsApp contact action in the existing contact section.
+- [x] Verify the WhatsApp action on desktop and mobile without changing the current form flow.
 - [x] Generate a short cinematic BMW launch video with real forward motion and camera parallax.
 - [x] Optimize the video for the intro and retain a clean poster/fallback state.
 - [x] Replace the flat image motion with the generated video while retaining the skip and sound controls.
