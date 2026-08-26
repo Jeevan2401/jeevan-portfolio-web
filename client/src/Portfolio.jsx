@@ -1147,9 +1147,8 @@ export default function Portfolio() {
             lineHeight: 1.6,
             marginTop: 22,
             position: "relative",
-            opacity: introDone ? 1 : 0,
-            transform: introDone ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.34s ease, transform 0.34s cubic-bezier(.16,.84,.44,1)",
+            opacity: 1,
+            transform: "translateY(0)",
           }}
         >
           Website developer building responsive, practical digital experiences. Computer Science student, independent builder, focused on work that ships.
@@ -1162,9 +1161,8 @@ export default function Portfolio() {
             marginTop: 34,
             flexWrap: "wrap",
             position: "relative",
-            opacity: introDone ? 1 : 0,
-            transform: introDone ? "translateY(0)" : "translateY(8px)",
-            transition: "opacity 0.38s ease 70ms, transform 0.38s cubic-bezier(.16,.84,.44,1) 70ms",
+            opacity: 1,
+            transform: "translateY(0)",
           }}
         >
           <Magnetic strength={20} as="button" onClick={() => scrollTo("work")}
