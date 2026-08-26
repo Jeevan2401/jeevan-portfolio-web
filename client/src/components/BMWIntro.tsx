@@ -23,6 +23,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
   const exitingRef = useRef(false);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const releaseScrollLockRef = useRef<(() => void) | null>(null);
 
   const startExit = (reducedMotion = false) => {
     if (exitingRef.current) return;
@@ -30,6 +31,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
     lastProgressRef.current = 100;
     setProgress(100);
     setLeaving(true);
+    releaseScrollLockRef.current?.();
     audioRef.current?.pause();
     if (finishTimer.current) clearTimeout(finishTimer.current);
     if (exitTimer.current) clearTimeout(exitTimer.current);
@@ -62,15 +64,35 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
     window.addEventListener("touchmove", preventScroll, { passive: false });
     window.addEventListener("keydown", preventScrollKey, { passive: false });
 
-    return () => {
+    let released = false;
+    const releaseScrollLock = () => {
+      if (released) return;
+      released = true;
       window.removeEventListener("wheel", preventScroll);
       window.removeEventListener("touchmove", preventScroll);
       window.removeEventListener("keydown", preventScrollKey);
-      root.style.overflow = saved.rootOverflow;
-      root.style.overscrollBehavior = saved.rootOverscroll;
-      body.style.overflow = saved.bodyOverflow;
-      body.style.overscrollBehavior = saved.bodyOverscroll;
-      body.style.touchAction = saved.bodyTouchAction;
+      root.style.overflow = "auto";
+      root.style.overflowX = "hidden";
+      root.style.overflowY = "auto";
+      root.style.overscrollBehavior = "auto";
+      body.style.overflow = "auto";
+      body.style.overflowX = "hidden";
+      body.style.overflowY = "auto";
+      body.style.overscrollBehavior = "auto";
+      body.style.touchAction = "auto";
+    };
+    releaseScrollLockRef.current = releaseScrollLock;
+
+    return () => {
+      releaseScrollLock();
+      releaseScrollLockRef.current = null;
+      if (!exitingRef.current) {
+        root.style.overflow = saved.rootOverflow;
+        root.style.overscrollBehavior = saved.rootOverscroll;
+        body.style.overflow = saved.bodyOverflow;
+        body.style.overscrollBehavior = saved.bodyOverscroll;
+        body.style.touchAction = saved.bodyTouchAction;
+      }
     };
   }, []);
 

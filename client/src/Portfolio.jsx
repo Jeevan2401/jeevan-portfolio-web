@@ -1253,16 +1253,24 @@ export default function Portfolio() {
         }}
       >
         {NAV.map((n, i) => (
-          <div
+          <button
+            type="button"
             key={n.id}
             onClick={() => scrollTo(n.id)}
             className="menu-item"
             style={{
               display: "flex",
+              width: "100%",
               alignItems: "baseline",
               gap: 16,
               padding: "18px 0",
               borderBottom: "1px solid #ffffff14",
+              borderTop: "none",
+              borderLeft: "none",
+              borderRight: "none",
+              background: "transparent",
+              color: "inherit",
+              textAlign: "left",
               cursor: "pointer",
               animationDelay: menuOpen ? `${i * 90}ms` : "0ms",
             }}
@@ -1278,7 +1286,7 @@ export default function Portfolio() {
             >
               {n.label}
             </span>
-          </div>
+          </button>
         ))}
         <div style={{ marginTop: 30, display: "flex", gap: 14, flexWrap: "wrap" }}>
           {[

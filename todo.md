@@ -1,5 +1,10 @@
 # Active Enhancement Checklist
 
+- [x] Inventory all interactive controls, internal navigation, outbound links, and form paths.
+- [x] Test the BMW launch, menu, profile card, share action, project links, contact links, and form validation.
+- [x] Check browser console and network logs for functional errors or failed critical requests. (No live browser/network failures found; the only automated-console error was from intentionally aborting the held BMW test asset.)
+- [x] Verify desktop and mobile layout, keyboard access, and scrolling behavior.
+- [x] Fix every verified issue and re-run the full functional audit. (Released the BMW scroll lock at exit and made menu destinations keyboard-operable.)
 - [x] Add a subtle red technical glow around the profile-card boundary.
 - [x] Trace and remove the remaining root-level overflow and touch-action lock after the BMW intro completes. (Post-intro root/body overflow, overscroll, and touch-action now resolve to normal scrollable values and are re-applied after BMW cleanup.)
 - [x] Verify scrolling works while the profile card is open on desktop and mobile.
