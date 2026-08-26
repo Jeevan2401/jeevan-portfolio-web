@@ -52,7 +52,7 @@ const LINKS = {
   github: "https://github.com/Jeevan2401",
   linkedin: "https://www.linkedin.com/in/jeevan-g-42a264373/",
   email: "mailto:jeevan24012007@gmail.com",
-  whatsapp: "https://wa.me/917358419838?text=Hi%20Jeevan%2C%20I%27m%20interested%20in%20a%20website%20project.",
+  whatsapp: "https://wa.me/917358419838?text=Hi%20Jeevan%2C%20I%27m%20%5BClient%20Name%5D.%20I%20need%20a%20%5BProject%20Type%5D%20website.%0A%0AProject%20brief%3A%20%5BShort%20project%20description%5D%0APreferred%20timeline%3A%20%5BTimeline%5D",
 };
 
 // Get your free access key at https://web3forms.com (takes ~30 seconds, just needs your email)
@@ -859,8 +859,14 @@ export default function Portfolio() {
         .contact-module::before, .contact-module::after { content: ''; position: absolute; width: 18px; height: 12px; pointer-events: none; opacity: .62; }
         .contact-module::before { left: 12px; top: 12px; border-top: 1px solid ${ACCENT}; border-left: 1px solid ${ACCENT}; }
         .contact-module::after { right: 12px; bottom: 12px; border-right: 1px solid ${ACCENT}; border-bottom: 1px solid ${ACCENT}; }
-        .contact-whatsapp { transition: background 180ms ease, border-color 180ms ease, transform 160ms cubic-bezier(.16,.84,.44,1); }
-        .contact-whatsapp:hover, .contact-whatsapp:focus-visible { background: ${ACCENT}24 !important; border-color: ${ACCENT} !important; outline: none; }
+        .contact-whatsapp { position: relative; overflow: hidden; isolation: isolate; transition: background 180ms ease, border-color 180ms ease, transform 160ms cubic-bezier(.16,.84,.44,1), box-shadow 180ms ease; }
+        .contact-whatsapp::before { content: ''; position: absolute; z-index: 0; inset: 0; background: linear-gradient(108deg, transparent 0 37%, ${ACCENT}d9 45%, ${ACCENT}f2 58%, transparent 68%); transform: translateX(-116%); transition: transform 440ms cubic-bezier(.16,.84,.44,1); }
+        .contact-whatsapp svg, .contact-whatsapp__copy, .contact-whatsapp__arrow { position: relative; z-index: 1; transition: transform 240ms cubic-bezier(.16,.84,.44,1), color 180ms ease; }
+        .contact-whatsapp:hover, .contact-whatsapp:focus-visible { background: ${ACCENT}24 !important; border-color: ${ACCENT} !important; box-shadow: 0 12px 26px -12px ${ACCENT}dd; outline: none; }
+        .contact-whatsapp:hover::before, .contact-whatsapp:focus-visible::before { transform: translateX(116%); }
+        .contact-whatsapp:hover svg, .contact-whatsapp:focus-visible svg { transform: rotate(-10deg) scale(1.13); }
+        .contact-whatsapp:hover .contact-whatsapp__copy, .contact-whatsapp:focus-visible .contact-whatsapp__copy { transform: translateX(3px); }
+        .contact-whatsapp:hover .contact-whatsapp__arrow, .contact-whatsapp:focus-visible .contact-whatsapp__arrow { transform: translate(4px, -2px); }
         .contact-whatsapp:active { transform: scale(.98); }
         @media (max-width: 640px) {
           .contact-grid { grid-template-columns: 1fr !important; }
@@ -1576,7 +1582,7 @@ export default function Portfolio() {
                 ))}
               </div>
               <div className="mono" style={{ color: "#8b8b90", fontSize: 10, letterSpacing: 1.25, lineHeight: 1.55, marginBottom: 10 }}>
-                FAST PROJECT BRIEF
+                FAST PROJECT BRIEF · TYPICAL RESPONSE WITHIN 24 HOURS
               </div>
               <Magnetic strength={12} as="a" href={LINKS.whatsapp} target="_blank" rel="noreferrer"
                 className="mono cursor-hover contact-whatsapp"
@@ -1596,7 +1602,8 @@ export default function Portfolio() {
                 }}
               >
                 <WhatsAppIcon size={16} color={ACCENT} />
-                WHATSAPP // QUICK PROJECT BRIEF ↗
+                <span className="contact-whatsapp__copy">WHATSAPP // QUICK PROJECT BRIEF</span>
+                <span className="contact-whatsapp__arrow" aria-hidden="true">↗</span>
               </Magnetic>
               <Magnetic strength={12} as="a" href={RESUME_DATA_URL} download="Jeevan_Resume.pdf"
                 className="mono cursor-hover send-btn"

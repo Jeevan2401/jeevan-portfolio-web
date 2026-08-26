@@ -1,5 +1,9 @@
 # Active Enhancement Checklist
 
+- [x] Add a concise 24-hour response-time expectation beside the fast WhatsApp channel.
+- [x] Customize the WhatsApp prefilled project brief with client-name and project-type placeholders.
+- [x] Enhance the WhatsApp hover and focus interaction while preserving accessibility.
+- [x] Validate the updated contact action on desktop and mobile.
 - [x] Rename the E2E capability label to Design to Launch.
 - [x] Review and refine the complete contact module, including the WhatsApp action and all contact paths.
 - [x] Check whether the constrained BMW video can be generated; otherwise document and apply the strongest viable animation approach. (Deferred video generation: daily quota unavailable; true-alpha CSS fallback remains active.)
