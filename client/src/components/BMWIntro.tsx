@@ -4,7 +4,8 @@
  */
 import { useEffect, useRef, useState } from "react";
 
-const INTRO_DURATION = 3100;
+const INTRO_DURATION = 2700;
+const INTRO_HANDOFF_DURATION = 300;
 const BMW_REFERENCE = "/manus-storage/bmw-side-profile-true-alpha_800a6571.webp";
 const ENGINE_REV = "/manus-storage/bmw-engine-rev_dede1da1.mp3";
 
@@ -32,7 +33,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
     audioRef.current?.pause();
     if (finishTimer.current) clearTimeout(finishTimer.current);
     if (exitTimer.current) clearTimeout(exitTimer.current);
-    exitTimer.current = setTimeout(onComplete, reducedMotion ? 220 : 600);
+    exitTimer.current = setTimeout(onComplete, reducedMotion ? 220 : INTRO_HANDOFF_DURATION);
   };
 
   useEffect(() => {
@@ -136,10 +137,10 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           isolation: isolate;
           touch-action: none;
           overscroll-behavior: none;
-          transition: opacity 580ms cubic-bezier(.16,.84,.44,1), transform 580ms cubic-bezier(.16,.84,.44,1), visibility 580ms step-end;
+          transition: opacity ${INTRO_HANDOFF_DURATION}ms cubic-bezier(.16,.84,.44,1), transform ${INTRO_HANDOFF_DURATION}ms cubic-bezier(.16,.84,.44,1), visibility ${INTRO_HANDOFF_DURATION}ms step-end;
         }
         .bmw-intro--leaving { opacity: 0; transform: scale(1.01); visibility: hidden; pointer-events: none; }
-        .bmw-intro--leaving .bmw-intro__reading { opacity: 0; transform: translateY(-12px); transition: opacity 260ms ease, transform 360ms cubic-bezier(.16,.84,.44,1); }
+        .bmw-intro--leaving .bmw-intro__reading { opacity: 0; transform: translateY(-12px); transition: opacity 180ms ease, transform ${INTRO_HANDOFF_DURATION}ms cubic-bezier(.16,.84,.44,1); }
         .bmw-intro::before {
           content: "";
           position: absolute;

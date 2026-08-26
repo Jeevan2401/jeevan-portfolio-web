@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Set the active BMW launch and numerical loader to complete in exactly 3.0 seconds.
+- [x] Align the car pass and intro fade so the hero appears immediately after the 0–100 completion state.
+- [x] Validate the complete sequence duration and mobile/desktop handoff.
 - [x] Lock document scrolling, wheel input, touch scrolling, and relevant keys until the BMW intro closes.
 - [x] Guarantee the intro counter cannot decrease or restart during the active launch.
 - [x] Verify the portfolio becomes scrollable only after the intro handoff completes.
