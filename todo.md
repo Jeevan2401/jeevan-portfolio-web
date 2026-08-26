@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Diagnose why the opened profile card surface hides the portrait and detail content. (The card flipper was an inline element, so its face layers did not receive the scene dimensions.)
+- [x] Restore the portrait, identity, and card-face content as the immediately visible layer.
+- [x] Validate visible profile-card content, flip behavior, and holographic effect on desktop and mobile.
 - [x] Add a card back with detailed technical skills and truthful portfolio statistics.
 - [x] Implement click, touch, and keyboard card flipping between the portrait and skills faces.
 - [x] Add a desktop mouse-responsive holographic glare while preserving reduced-motion behavior.
