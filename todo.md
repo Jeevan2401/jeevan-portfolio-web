@@ -1,5 +1,10 @@
 # Active Enhancement Checklist
 
+- [x] Replace the generic technical back content with truthful programming-language experience levels.
+- [x] Add a reliable profile-share action beneath the card, with graceful sharing fallback.
+- [x] Add a short, unobtrusive swoosh whenever the card changes face.
+- [x] Diagnose and remove the profile-card interaction that blocks page scrolling. (The card now explicitly restores vertical overflow and allows vertical touch panning after launch completion.)
+- [x] Validate sharing, sound, card flip, and page scrolling on desktop and mobile.
 - [x] Diagnose why the opened profile card surface hides the portrait and detail content. (The card flipper was an inline element, so its face layers did not receive the scene dimensions.)
 - [x] Restore the portrait, identity, and card-face content as the immediately visible layer.
 - [x] Validate visible profile-card content, flip behavior, and holographic effect on desktop and mobile.

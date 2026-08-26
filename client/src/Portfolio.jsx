@@ -749,6 +749,7 @@ export default function Portfolio() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileCardOpen, setProfileCardOpen] = useState(false);
   const [profileCardFlipped, setProfileCardFlipped] = useState(false);
+  const [shareStatus, setShareStatus] = useState("idle");
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [formErrors, setFormErrors] = useState({ name: "", email: "", message: "" });
   const [touched, setTouched] = useState({ name: false, email: false, message: false });
@@ -756,6 +757,8 @@ export default function Portfolio() {
   const name = useGlitchText("JEEVAN", { active: loaded, speed: 26, loopEvery: 9000 });
   const progress = useScrollProgress();
   const parallax = useMouseParallax(24);
+  const cardAudioContextRef = useRef(null);
+  const shareTimerRef = useRef(null);
 
   const handleFormChange = (e) => {
     const { name: field, value } = e.target;
@@ -818,6 +821,31 @@ export default function Portfolio() {
     };
   }, [introDone]);
 
+  useEffect(() => {
+    if (!introDone || !profileCardOpen) return;
+    const root = document.documentElement;
+    const body = document.body;
+    const saved = {
+      rootOverflowY: root.style.overflowY,
+      rootOverscrollY: root.style.overscrollBehaviorY,
+      bodyOverflowY: body.style.overflowY,
+      bodyOverscrollY: body.style.overscrollBehaviorY,
+      bodyTouchAction: body.style.touchAction,
+    };
+    root.style.overflowY = "auto";
+    root.style.overscrollBehaviorY = "auto";
+    body.style.overflowY = "auto";
+    body.style.overscrollBehaviorY = "auto";
+    body.style.touchAction = "pan-y";
+    return () => {
+      root.style.overflowY = saved.rootOverflowY;
+      root.style.overscrollBehaviorY = saved.rootOverscrollY;
+      body.style.overflowY = saved.bodyOverflowY;
+      body.style.overscrollBehaviorY = saved.bodyOverscrollY;
+      body.style.touchAction = saved.bodyTouchAction;
+    };
+  }, [introDone, profileCardOpen]);
+
 
   const scrollTo = (id) => {
     setMenuOpen(false);
@@ -855,6 +883,65 @@ export default function Portfolio() {
     scene.style.setProperty("--card-rotate-y", "0deg");
   };
 
+  const playCardSwoosh = () => {
+    if (typeof window === "undefined") return;
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) return;
+    if (!cardAudioContextRef.current) cardAudioContextRef.current = new AudioContextClass();
+    const context = cardAudioContextRef.current;
+    if (context.state === "suspended") context.resume().catch(() => {});
+    const now = context.currentTime;
+    const gain = context.createGain();
+    const tone = context.createOscillator();
+    const air = context.createOscillator();
+    tone.type = "triangle";
+    air.type = "sine";
+    tone.frequency.setValueAtTime(220, now);
+    tone.frequency.exponentialRampToValueAtTime(720, now + 0.24);
+    air.frequency.setValueAtTime(490, now);
+    air.frequency.exponentialRampToValueAtTime(920, now + 0.2);
+    gain.gain.setValueAtTime(0.0001, now);
+    gain.gain.exponentialRampToValueAtTime(0.026, now + 0.035);
+    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.29);
+    tone.connect(gain);
+    air.connect(gain);
+    gain.connect(context.destination);
+    tone.start(now);
+    air.start(now);
+    tone.stop(now + 0.3);
+    air.stop(now + 0.3);
+  };
+
+  const flipProfileCard = () => {
+    playCardSwoosh();
+    setProfileCardFlipped((flipped) => !flipped);
+  };
+
+  const handleProfileShare = async () => {
+    if (typeof window === "undefined") return;
+    const shareData = {
+      title: "Jeevan G. — Website Developer",
+      text: "Explore Jeevan G.'s website developer profile.",
+      url: window.location.href,
+    };
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        setShareStatus("shared");
+      } else if (navigator.clipboard) {
+        await navigator.clipboard.writeText(window.location.href);
+        setShareStatus("copied");
+      } else {
+        setShareStatus("copy-unavailable");
+      }
+    } catch (error) {
+      if (error?.name === "AbortError") return;
+      setShareStatus("copy-unavailable");
+    }
+    if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
+    shareTimerRef.current = setTimeout(() => setShareStatus("idle"), 2600);
+  };
+
   return (
     <div
       style={{
@@ -885,13 +972,13 @@ export default function Portfolio() {
         .identity-trigger:hover .identity-trigger__caption, .identity-trigger:focus-visible .identity-trigger__caption { opacity: 1; transform: translate(0, -50%); }
         @keyframes identityOrbit { from { transform: rotate(-7deg); } to { transform: rotate(353deg); } }
         @keyframes profileCardEnter { from { opacity: 0; transform: translateY(-10px) rotateX(-4deg) scale(.97); } to { opacity: 1; transform: translateY(0) rotateX(0) scale(1); } }
-        .profile-card { position: fixed; z-index: 75; top: 72px; left: 20px; width: min(292px, calc(100vw - 40px)); padding: 10px; overflow: hidden; background: linear-gradient(145deg, #171719 0%, #0b0b0c 65%); border: 1px solid #e0322caa; box-shadow: 14px 16px 0 #050506, 0 18px 50px #00000077, inset 0 0 0 1px #ffffff0b; animation: profileCardEnter 360ms cubic-bezier(.16,.84,.44,1) both; transform-origin: top left; }
+        .profile-card { position: fixed; z-index: 75; top: 72px; left: 20px; width: min(292px, calc(100vw - 40px)); padding: 10px; overflow: hidden; background: linear-gradient(145deg, #171719 0%, #0b0b0c 65%); border: 1px solid #e0322caa; box-shadow: 14px 16px 0 #050506, 0 18px 50px #00000077, inset 0 0 0 1px #ffffff0b; animation: profileCardEnter 360ms cubic-bezier(.16,.84,.44,1) both; transform-origin: top left; touch-action: pan-y; overscroll-behavior: auto; }
         .profile-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55; background: linear-gradient(112deg, transparent 0 42%, #e0322c1c 46%, transparent 53%), repeating-linear-gradient(0deg, transparent 0 22px, #ffffff05 23px 24px); }
         .profile-card__topline { position: relative; z-index: 3; }
         .profile-card__topline { display: flex; align-items: center; justify-content: space-between; min-height: 18px; color: #c9c9cc; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .14em; }
         .profile-card__close { width: 24px; height: 24px; padding: 0; border: 1px solid #ffffff33; color: #b8b8bd; background: #0a0a0ba8; cursor: pointer; font: 500 12px/1 'JetBrains Mono', monospace; }
         .profile-card__close:hover, .profile-card__close:focus-visible { color: #f2f0ec; border-color: ${ACCENT}; outline: none; }
-        .profile-card__scene { --glare-x: 50%; --glare-y: 50%; --glare-opacity: 0; --card-rotate-x: 0deg; --card-rotate-y: 0deg; position: relative; z-index: 1; display: block; width: 100%; height: 392px; margin-top: 9px; padding: 0; color: inherit; text-align: left; border: 0; background: transparent; cursor: pointer; perspective: 1000px; transform-style: preserve-3d; }
+        .profile-card__scene { --glare-x: 50%; --glare-y: 50%; --glare-opacity: 0; --card-rotate-x: 0deg; --card-rotate-y: 0deg; position: relative; z-index: 1; display: block; width: 100%; height: 392px; margin-top: 9px; padding: 0; color: inherit; text-align: left; border: 0; background: transparent; cursor: pointer; perspective: 1000px; transform-style: preserve-3d; touch-action: pan-y; }
         .profile-card__scene::after { content: ''; position: absolute; z-index: 5; inset: 0; opacity: var(--glare-opacity); pointer-events: none; background: radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.58) 0%, rgba(118,235,255,.23) 11%, rgba(255,90,200,.18) 22%, rgba(255,222,97,.12) 33%, transparent 58%), repeating-linear-gradient(113deg, transparent 0 7px, rgba(106,229,255,.16) 8px 9px, transparent 10px 18px); mix-blend-mode: color-dodge; transition: opacity 170ms ease; }
         .profile-card__scene:focus-visible { outline: 2px solid #f2f0ec; outline-offset: 4px; }
         .profile-card__flipper { position: relative; display: block; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX(var(--card-rotate-x)) rotateY(var(--card-rotate-y)); transition: transform 460ms cubic-bezier(.16,.84,.44,1); }
@@ -925,6 +1012,11 @@ export default function Portfolio() {
         .profile-card__backstat b { display: block; color: #f2f0ec; font: 700 17px/.9 'Space Grotesk', sans-serif; letter-spacing: -.06em; }
         .profile-card__backstat span { display: block; margin-top: 5px; color: #89898f; font: 500 7px/1.25 'JetBrains Mono', monospace; letter-spacing: .07em; }
         .profile-card__flip-hint { display: block; margin-top: 13px; color: ${ACCENT}; font: 500 8px/1.3 'JetBrains Mono', monospace; letter-spacing: .1em; }
+        .profile-card__share { position: relative; z-index: 3; display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+        .profile-card__share-button { flex: 1; min-height: 34px; padding: 9px 10px; border: 1px solid ${ACCENT}; color: #f2f0ec; background: #e0322c12; cursor: pointer; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .11em; transition: background 180ms ease, color 180ms ease, transform 160ms cubic-bezier(.16,.84,.44,1); }
+        .profile-card__share-button:hover, .profile-card__share-button:focus-visible { background: ${ACCENT}; color: #0a0a0b; outline: none; }
+        .profile-card__share-button:active { transform: scale(.98); }
+        .profile-card__share-status { min-width: 66px; color: #98989e; font: 500 8px/1.25 'JetBrains Mono', monospace; letter-spacing: .08em; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         .portfolio-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background: linear-gradient(105deg, transparent 0 42%, #e0322c0a 48%, transparent 58%), repeating-linear-gradient(0deg, transparent 0 28px, #ffffff05 29px 30px); mix-blend-mode: screen; }
         .hero-signal { position: absolute; z-index: 1; top: 14%; right: 6vw; width: min(34vw, 460px); aspect-ratio: 1.12; pointer-events: none; opacity: .42; border-right: 1px solid #e0322c55; border-bottom: 1px solid #e0322c55; background: linear-gradient(135deg, transparent 0 35%, #e0322c0d 35% 36%, transparent 36% 62%, #ffffff08 62% 63%, transparent 63%), repeating-linear-gradient(90deg, transparent 0 48px, #ffffff06 49px 50px); }
@@ -1128,7 +1220,7 @@ export default function Portfolio() {
             data-flipped={profileCardFlipped}
             aria-pressed={profileCardFlipped}
             aria-label={profileCardFlipped ? "Technical skills and statistics shown. Activate to return to the portrait." : "Portrait shown. Activate to reveal detailed technical skills and statistics."}
-            onClick={() => setProfileCardFlipped((flipped) => !flipped)}
+            onClick={flipProfileCard}
             onMouseMove={handleProfileCardMouseMove}
             onMouseLeave={clearProfileCardGlare}
           >
@@ -1149,20 +1241,26 @@ export default function Portfolio() {
               <span className="profile-card__face profile-card__face--back">
                 <span className="profile-card__backhead"><b>Technical Skills</b><span>BACK // 02</span></span>
                 <span className="profile-card__skillset">
-                  <span className="profile-card__skillrow"><b>FRONTEND</b><span>React, Vite, JavaScript, responsive CSS</span></span>
-                  <span className="profile-card__skillrow"><b>PYTHON</b><span>Flask, speech workflows, scikit-learn</span></span>
-                  <span className="profile-card__skillrow"><b>VISION</b><span>OpenCV, MediaPipe, real-time detection</span></span>
-                  <span className="profile-card__skillrow"><b>SHIPPING</b><span>GitHub, Docker, deployment-minded builds</span></span>
+                  <span className="profile-card__skillrow"><b>PYTHON</b><span>Project-based · AI, desktop, and vision builds</span></span>
+                  <span className="profile-card__skillrow"><b>JAVASCRIPT</b><span>Active · React and Vite web interfaces</span></span>
+                  <span className="profile-card__skillrow"><b>HTML + CSS</b><span>Active · responsive layouts and interaction styling</span></span>
+                  <span className="profile-card__skillrow"><b>SQL</b><span>Learning path · data-aware full-stack work</span></span>
                 </span>
                 <span className="profile-card__backstats" aria-label="Portfolio statistics">
+                  <span className="profile-card__backstat"><b>03</b><span>ACTIVE LANGUAGES</span></span>
                   <span className="profile-card__backstat"><b>04</b><span>PROJECT LOGS</span></span>
-                  <span className="profile-card__backstat"><b>03</b><span>BUILD MODES</span></span>
-                  <span className="profile-card__backstat"><b>01</b><span>ACTIVE PROFILE</span></span>
+                  <span className="profile-card__backstat"><b>01</b><span>LEARNING PATH</span></span>
                 </span>
                 <span className="profile-card__flip-hint">ACTIVATE CARD // PORTRAIT FACE</span>
               </span>
             </span>
           </button>
+          <div className="profile-card__share">
+            <button type="button" className="profile-card__share-button" onClick={handleProfileShare}>SHARE PROFILE ↗</button>
+            <output className="profile-card__share-status" aria-live="polite">
+              {shareStatus === "shared" ? "SHARED" : shareStatus === "copied" ? "LINK COPIED" : shareStatus === "copy-unavailable" ? "UNAVAILABLE" : ""}
+            </output>
+          </div>
         </aside>
       )}
 
