@@ -1,5 +1,12 @@
 # Active Enhancement Checklist
 
+- [x] Replace the pending generated video dependency with a CSS BMW launch pass using the prepared side-profile reference.
+- [x] Add lightweight wheel, suspension, smoke, shadow, and speed-line cues to the one-directional CSS motion.
+- [x] Validate the CSS intro on desktop and mobile while preserving sound, skip, and linear-loading controls.
+- [x] Prepare the supplied side-profile BMW reference for constrained video generation.
+- [ ] Generate one photorealistic BMW drag pass from left to right with a locked side-on camera and no additional cars or text.
+- [ ] Optimize and replace the current intro clip without changing the existing controls or loading flow.
+- [ ] Verify the final intro shows a single undistorted BMW moving continuously from left to right and exiting cleanly.
 - [x] Add a direct WhatsApp contact action in the existing contact section.
 - [x] Verify the WhatsApp action on desktop and mobile without changing the current form flow.
 - [x] Generate a short cinematic BMW launch video with real forward motion and camera parallax.

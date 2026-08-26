@@ -1,12 +1,11 @@
 /*
- * Style preservation: the generated motion clip remains a short near-black,
- * red/blue technical prelude and hands back cleanly to the existing portfolio.
+ * Style preservation: a single exact side-profile BMW remains the only vehicle.
+ * Motion uses CSS transform/opacity for a fast, lightweight technical prelude.
  */
 import { useEffect, useRef, useState } from "react";
 
-const INTRO_DURATION = 3350;
-const BMW_LAUNCH_VIDEO = "/manus-storage/bmw-launch-motion-web_8dd3d99f.mp4";
-const BMW_POSTER = "/manus-storage/bmw-m4-intro-matte_58f0c649.webp";
+const INTRO_DURATION = 3100;
+const BMW_REFERENCE = "/manus-storage/bmw-side-profile-css_812004bf.webp";
 const ENGINE_REV = "/manus-storage/bmw-engine-rev_dede1da1.mp3";
 
 type BMWIntroProps = {
@@ -16,20 +15,18 @@ type BMWIntroProps = {
 export default function BMWIntro({ onComplete }: BMWIntroProps) {
   const [progress, setProgress] = useState(0);
   const [leaving, setLeaving] = useState(false);
-  const [mediaReady, setMediaReady] = useState(false);
+  const [carReady, setCarReady] = useState(false);
   const [soundMuted, setSoundMuted] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const startExit = (reducedMotion = false) => {
     setLeaving(true);
     audioRef.current?.pause();
-    videoRef.current?.pause();
     if (finishTimer.current) clearTimeout(finishTimer.current);
     if (exitTimer.current) clearTimeout(exitTimer.current);
-    exitTimer.current = setTimeout(onComplete, reducedMotion ? 220 : 660);
+    exitTimer.current = setTimeout(onComplete, reducedMotion ? 220 : 600);
   };
 
   const toggleSound = () => {
@@ -47,14 +44,12 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
   };
 
   useEffect(() => {
-    if (!mediaReady) return;
+    if (!carReady) return;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const reducedMotion = motionQuery.matches;
-    const duration = reducedMotion ? 420 : INTRO_DURATION;
+    const duration = reducedMotion ? 380 : INTRO_DURATION;
     const start = performance.now();
     let frame = 0;
-
-    if (reducedMotion) videoRef.current?.pause();
 
     const tick = (now: number) => {
       const raw = Math.min((now - start) / duration, 1);
@@ -63,16 +58,16 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         frame = requestAnimationFrame(tick);
         return;
       }
-      finishTimer.current = setTimeout(() => startExit(reducedMotion), reducedMotion ? 20 : 16);
+      finishTimer.current = setTimeout(() => startExit(reducedMotion), reducedMotion ? 20 : 12);
     };
-
     frame = requestAnimationFrame(tick);
+
     return () => {
       cancelAnimationFrame(frame);
       if (finishTimer.current) clearTimeout(finishTimer.current);
       if (exitTimer.current) clearTimeout(exitTimer.current);
     };
-  }, [mediaReady, onComplete]);
+  }, [carReady, onComplete]);
 
   const nameOpacity = Math.max(0.14, Math.min(1, progress / 74));
 
@@ -82,6 +77,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         .bmw-intro {
           --intro-red: #e0322c;
           --intro-blue: #3078ba;
+          --launch-duration: ${INTRO_DURATION}ms;
           position: fixed;
           inset: 0;
           z-index: 10000;
@@ -91,57 +87,137 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           background: #080809;
           color: #f2f0ec;
           isolation: isolate;
-          transition: opacity 620ms cubic-bezier(.16,.84,.44,1), transform 620ms cubic-bezier(.16,.84,.44,1), visibility 620ms step-end;
+          transition: opacity 580ms cubic-bezier(.16,.84,.44,1), transform 580ms cubic-bezier(.16,.84,.44,1), visibility 580ms step-end;
         }
-        .bmw-intro--leaving { opacity: 0; transform: scale(1.012); visibility: hidden; pointer-events: none; }
-        .bmw-intro--leaving .bmw-intro__reading { opacity: 0; transform: translateY(-12px); transition: opacity 320ms ease, transform 420ms cubic-bezier(.16,.84,.44,1); }
+        .bmw-intro--leaving { opacity: 0; transform: scale(1.01); visibility: hidden; pointer-events: none; }
+        .bmw-intro--leaving .bmw-intro__reading { opacity: 0; transform: translateY(-12px); transition: opacity 260ms ease, transform 360ms cubic-bezier(.16,.84,.44,1); }
         .bmw-intro::before {
           content: "";
           position: absolute;
           inset: 0;
           z-index: 1;
-          background: radial-gradient(circle at 50% 48%, rgba(224,50,44,.12), transparent 34%), linear-gradient(90deg, transparent 0%, rgba(255,255,255,.035) 50%, transparent 100%);
+          background: radial-gradient(ellipse at 38% 46%, rgba(224,50,44,.13), transparent 34%), linear-gradient(90deg, transparent 0%, rgba(255,255,255,.035) 50%, transparent 100%);
           pointer-events: none;
         }
         .bmw-intro__grid {
           position: absolute;
           inset: 0;
           z-index: 1;
-          opacity: .25;
+          opacity: .24;
           background-image: linear-gradient(rgba(255,255,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,.04) 1px, transparent 1px);
           background-size: 62px 62px;
           mask-image: radial-gradient(ellipse at center, black, transparent 72%);
           pointer-events: none;
         }
-        .bmw-intro__video {
+        .bmw-intro__road {
           position: absolute;
-          z-index: 2;
-          top: 50%;
-          left: 50%;
-          width: min(100vw, 1440px);
-          min-width: 920px;
-          height: auto;
-          transform: translate(-50%, -50%);
-          opacity: 0;
-          object-fit: cover;
-          -webkit-mask-image: linear-gradient(90deg, transparent 0%, transparent 17%, #000 26%, #000 100%);
-          mask-image: linear-gradient(90deg, transparent 0%, transparent 17%, #000 26%, #000 100%);
-          mix-blend-mode: screen;
-          filter: contrast(1.04) saturate(1.02) drop-shadow(0 28px 22px rgba(0,0,0,.42));
-          transition: opacity 180ms ease;
+          z-index: 1;
+          right: -5%;
+          bottom: 0;
+          left: -5%;
+          height: 42%;
+          background: linear-gradient(180deg, transparent, rgba(16,16,18,.78) 30%, #060607 100%);
+          border-top: 1px solid rgba(255,255,255,.07);
           pointer-events: none;
         }
-        .bmw-intro__video--ready { opacity: .98; }
+        .bmw-intro__rig {
+          position: absolute;
+          z-index: 2;
+          top: 22%;
+          left: 3.5vw;
+          width: min(72vw, 1160px);
+          aspect-ratio: 16 / 9;
+          opacity: 0;
+          transform-origin: 48% 66%;
+          background: url("/manus-storage/bmw-side-profile-css_812004bf.webp") center / contain no-repeat;
+          pointer-events: none;
+          will-change: transform, opacity;
+        }
+        .bmw-intro__rig--ready { opacity: 1; animation: bmw-drag-pass var(--launch-duration) cubic-bezier(.2,.7,.18,1) both; }
+        .bmw-intro__car {
+          position: absolute;
+          width: 1px;
+          height: 1px;
+          opacity: 0;
+          pointer-events: none;
+        }
+        .bmw-intro__shadow {
+          position: absolute;
+          z-index: -1;
+          left: 10%;
+          right: 6%;
+          bottom: 18%;
+          height: 6%;
+          border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(0,0,0,.82), rgba(0,0,0,.3) 54%, transparent 75%);
+          filter: blur(7px);
+          opacity: .72;
+          animation: bmw-shadow var(--launch-duration) cubic-bezier(.2,.7,.18,1) both;
+        }
+        .bmw-intro__wheel {
+          position: absolute;
+          z-index: 2;
+          top: 59%;
+          width: 12.8%;
+          aspect-ratio: 1;
+          border: 1px solid rgba(241,241,243,.32);
+          border-radius: 50%;
+          background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.18) 0deg 3deg, transparent 3deg 15deg);
+          box-shadow: inset 0 0 0 25% rgba(0,0,0,.28), 0 0 16px rgba(255,255,255,.08);
+          mix-blend-mode: screen;
+          opacity: 0;
+          animation: bmw-wheel-spin var(--launch-duration) linear both;
+        }
+        .bmw-intro__wheel--rear { left: 17.3%; }
+        .bmw-intro__wheel--front { left: 73.1%; }
+        .bmw-intro__smoke {
+          position: absolute;
+          z-index: -2;
+          top: 59%;
+          left: 6%;
+          width: 29%;
+          height: 22%;
+          border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(185,185,190,.28), rgba(120,120,125,.12) 42%, transparent 72%);
+          filter: blur(11px);
+          opacity: 0;
+          animation: bmw-smoke var(--launch-duration) ease-out both;
+        }
         .bmw-intro__speedline {
           position: absolute;
           z-index: 2;
           top: 42%;
-          left: -15%;
-          width: 130%;
+          left: -18%;
+          width: 138%;
           height: 1px;
-          background: linear-gradient(90deg, transparent, rgba(224,50,44,.72), rgba(48,120,186,.52), transparent);
-          box-shadow: 0 -12px 0 rgba(255,255,255,.04), 0 12px 0 rgba(255,255,255,.04);
+          background: linear-gradient(90deg, transparent, rgba(224,50,44,.74), rgba(48,120,186,.58), transparent);
+          box-shadow: 0 -12px 0 rgba(255,255,255,.045), 0 12px 0 rgba(255,255,255,.045);
           pointer-events: none;
+        }
+        @keyframes bmw-drag-pass {
+          0%, 15% { transform: translate3d(0,0,0) scale(1); filter: blur(0); }
+          18% { transform: translate3d(.3vw,4px,0) scaleX(1.015) scaleY(.982); }
+          24% { transform: translate3d(7vw,-1px,0) scaleX(1.006) scaleY(.995); filter: blur(.1px); }
+          52% { transform: translate3d(44vw,-3px,0) scale(1.02); filter: blur(.22px); }
+          79% { transform: translate3d(86vw,-1px,0) scale(1.012); filter: blur(.5px); }
+          100% { transform: translate3d(137vw,0,0) scale(.99); filter: blur(1.1px); }
+        }
+        @keyframes bmw-wheel-spin {
+          0%, 15% { transform: rotate(0); opacity: 0; }
+          18% { opacity: .16; }
+          100% { transform: rotate(2160deg); opacity: .24; }
+        }
+        @keyframes bmw-shadow {
+          0%, 15% { transform: scaleX(.96); opacity: .65; }
+          19% { transform: scaleX(1.08); opacity: .88; }
+          70% { transform: scaleX(1.2); opacity: .74; }
+          100% { transform: scaleX(1.5); opacity: 0; }
+        }
+        @keyframes bmw-smoke {
+          0%, 15% { opacity: 0; transform: translateX(0) scale(.35); }
+          21% { opacity: .72; transform: translateX(-2vw) scale(1); }
+          40% { opacity: .22; transform: translateX(-7vw) scale(1.5); }
+          100% { opacity: 0; transform: translateX(-12vw) scale(2.2); }
         }
         .bmw-intro__reading {
           position: relative;
@@ -149,7 +225,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           width: min(90vw, 580px);
           margin-top: clamp(220px, 35vh, 360px);
           text-align: center;
-          transition: opacity 320ms ease, transform 420ms cubic-bezier(.16,.84,.44,1);
+          transition: opacity 260ms ease, transform 360ms cubic-bezier(.16,.84,.44,1);
         }
         .bmw-intro__index { display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 14px; color: #77777e; font: 500 10px/1 "JetBrains Mono", monospace; letter-spacing: .2em; }
         .bmw-intro__bars { display: inline-flex; gap: 3px; }
@@ -168,30 +244,26 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         .bmw-intro__skip:active, .bmw-intro__sound:active { transform: scale(.97); }
         .bmw-intro__sound-indicator { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px currentColor; opacity: .75; }
         @media (max-width: 640px) {
-          .bmw-intro__video { width: auto; min-width: 0; height: 58vh; top: 34%; }
+          .bmw-intro__rig { top: 20%; left: 3vw; width: 106vw; }
           .bmw-intro__reading { margin-top: min(46vh, 350px); }
           .bmw-intro__speedline { top: 47%; }
           .bmw-intro__grid { background-size: 42px 42px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .bmw-intro__video { opacity: .32; filter: grayscale(.1) blur(.2px); }
+          .bmw-intro__rig--ready { animation: none; transform: translate3d(10vw,0,0); }
+          .bmw-intro__wheel, .bmw-intro__smoke, .bmw-intro__shadow { animation: none; opacity: 0; }
           .bmw-intro, .bmw-intro__reading, .bmw-intro__rule b { transition-duration: 120ms; }
         }
       `}</style>
       <div className="bmw-intro__grid" aria-hidden="true" />
-      <video
-        ref={videoRef}
-        className={`bmw-intro__video ${mediaReady ? "bmw-intro__video--ready" : ""}`}
-        src={BMW_LAUNCH_VIDEO}
-        poster={BMW_POSTER}
-        autoPlay
-        muted
-        playsInline
-        preload="auto"
-        onCanPlay={(event) => { event.currentTarget.playbackRate = 1.2; setMediaReady(true); }}
-        onError={() => setMediaReady(true)}
-        aria-hidden="true"
-      />
+      <div className="bmw-intro__road" aria-hidden="true" />
+      <div className={`bmw-intro__rig ${carReady ? "bmw-intro__rig--ready" : ""}`} aria-hidden="true">
+        <div className="bmw-intro__shadow" />
+        <div className="bmw-intro__smoke" />
+        <img className="bmw-intro__car" src={BMW_REFERENCE} onLoad={() => setCarReady(true)} onError={() => setCarReady(true)} alt="" fetchPriority="high" />
+        <span className="bmw-intro__wheel bmw-intro__wheel--rear" />
+        <span className="bmw-intro__wheel bmw-intro__wheel--front" />
+      </div>
       <div className="bmw-intro__speedline" aria-hidden="true" style={{ transform: `translate3d(${-progress * 0.18}vw, 0, 0) skewY(-2deg)`, opacity: 0.52 + Math.min(progress, 70) / 70 * 0.48 }} />
       <audio ref={audioRef} src={ENGINE_REV} preload="metadata" muted={soundMuted} />
       <div className="bmw-intro__reading">
