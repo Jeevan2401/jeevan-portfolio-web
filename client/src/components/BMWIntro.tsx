@@ -11,7 +11,7 @@ const ENGINE_REV = "/manus-storage/bmw-engine-rev_dede1da1.mp3";
 
 function getCarPosition(progress: number) {
   const stops = [
-    [0, -94], [10, -56], [25, -24], [55, 3], [82, 30], [96, 58], [100, 132],
+    [0, -88], [15, -50], [36, -18], [60, 2], [76, 24], [89, 58], [100, 128],
   ];
   const nextIndex = stops.findIndex(([stop]) => progress <= stop);
   if (nextIndex <= 0) return stops[0][1];
@@ -19,6 +19,18 @@ function getCarPosition(progress: number) {
   const [endProgress, endPosition] = stops[nextIndex];
   const localProgress = (progress - startProgress) / (endProgress - startProgress);
   return startPosition + (endPosition - startPosition) * localProgress;
+}
+
+function getCarScale(progress: number) {
+  if (progress <= 72) return 0.74 + (progress / 72) * 0.38;
+  if (progress <= 88) return 1.12 + ((progress - 72) / 16) * 0.04;
+  return 1.16 - ((progress - 88) / 12) * 0.22;
+}
+
+function getCarYaw(progress: number) {
+  if (progress <= 58) return -7 + (progress / 58) * 7;
+  if (progress <= 82) return ((progress - 58) / 24) * 6;
+  return 6 + ((progress - 82) / 18) * 3;
 }
 
 type BMWIntroProps = {
@@ -66,8 +78,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
 
     const tick = (now: number) => {
       const raw = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - raw, 3);
-      setProgress(Math.round(eased * 100));
+      setProgress(Math.min(100, Math.floor(raw * 100)));
 
       if (raw < 1) {
         frame = requestAnimationFrame(tick);
@@ -87,7 +98,11 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
 
   const nameOpacity = Math.max(0.14, Math.min(1, progress / 78));
   const carPosition = getCarPosition(progress);
-  const carBlur = progress > 88 ? (progress - 88) * 0.12 : 0;
+  const carScale = getCarScale(progress);
+  const carYaw = getCarYaw(progress);
+  const carLift = Math.sin((progress / 100) * Math.PI) * -10;
+  const carOpacity = progress < 10 ? 0.55 + progress * 0.045 : progress > 95 ? 1 - ((progress - 95) / 5) * 0.16 : 1;
+  const shadowScale = 0.66 + Math.min(progress, 86) / 86 * 0.48;
 
   return (
     <section
@@ -107,6 +122,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           background: #080809;
           color: #f2f0ec;
           isolation: isolate;
+          perspective: 1500px;
           transition: opacity 860ms cubic-bezier(.16,.84,.44,1), transform 860ms cubic-bezier(.16,.84,.44,1), filter 860ms cubic-bezier(.16,.84,.44,1), visibility 860ms step-end;
         }
         .bmw-intro--leaving { opacity: 0; transform: scale(1.018); filter: blur(1.4px); visibility: hidden; pointer-events: none; }
@@ -139,7 +155,23 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           background: linear-gradient(90deg, transparent, rgba(224,50,44,.75), rgba(48,120,186,.55), transparent);
           box-shadow: 0 -12px 0 rgba(255,255,255,.04), 0 12px 0 rgba(255,255,255,.04);
           transform: skewY(-2deg);
+          transition: opacity 120ms linear;
           pointer-events: none;
+        }
+        .bmw-intro__ground-shadow {
+          position: absolute;
+          top: clamp(358px, 58vh, 490px);
+          left: 0;
+          z-index: 1;
+          width: min(52vw, 760px);
+          height: 34px;
+          border-radius: 50%;
+          background: radial-gradient(ellipse, rgba(0,0,0,.7) 0%, rgba(0,0,0,.28) 44%, transparent 72%);
+          opacity: .8;
+          filter: blur(5px);
+          pointer-events: none;
+          transform-origin: center;
+          will-change: transform, opacity;
         }
         .bmw-intro__car {
           position: absolute;
@@ -150,9 +182,13 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           z-index: 2;
           opacity: 0;
           mix-blend-mode: screen;
+          -webkit-mask-image: radial-gradient(ellipse 94% 84% at center, #000 52%, rgba(0,0,0,.9) 68%, transparent 100%);
+          mask-image: radial-gradient(ellipse 94% 84% at center, #000 52%, rgba(0,0,0,.9) 68%, transparent 100%);
           filter: drop-shadow(0 28px 20px rgba(0,0,0,.5)) drop-shadow(-42px 0 16px rgba(224,50,44,.12));
           transform: translate3d(-106%, 0, 0);
-          transition: opacity 180ms ease, filter 50ms linear;
+          transform-origin: 52% 68%;
+          transition: opacity 120ms linear;
+          will-change: transform, opacity;
           user-select: none;
           pointer-events: none;
         }
@@ -231,6 +267,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         .bmw-intro__sound-indicator { width: 6px; height: 6px; border-radius: 50%; background: currentColor; box-shadow: 0 0 0 3px currentColor; opacity: .75; }
         @media (max-width: 640px) {
           .bmw-intro__car { width: 142vw; top: 31%; }
+          .bmw-intro__ground-shadow { top: 57%; width: 92vw; }
           .bmw-intro__reading { margin-top: min(46vh, 350px); }
           .bmw-intro__speedline { top: 47%; }
           .bmw-intro__grid { background-size: 42px 42px; }
@@ -241,9 +278,10 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         }
       `}</style>
       <div className="bmw-intro__grid" aria-hidden="true" />
-      <div className="bmw-intro__speedline" aria-hidden="true" />
+      <div className="bmw-intro__speedline" aria-hidden="true" style={{ transform: `translate3d(${-progress * 0.18}vw, 0, 0) skewY(-2deg)`, opacity: 0.55 + Math.min(progress, 70) / 70 * 0.45 }} />
       <audio ref={audioRef} src={ENGINE_REV} preload="metadata" muted={soundMuted} />
-      <img className={`bmw-intro__car ${carReady ? "bmw-intro__car--ready" : ""}`} src={BMW_CUTOUT} onLoad={() => setCarReady(true)} onError={() => setCarReady(true)} style={{ transform: `translate3d(${carPosition}%, 0, 0) skewX(${Math.min(2, progress / 52 - 1.2)}deg)`, filter: `blur(${carBlur}px) drop-shadow(0 28px 20px rgba(0,0,0,.5)) drop-shadow(-42px 0 16px rgba(224,50,44,.14))` }} alt="" aria-hidden="true" />
+      <div className="bmw-intro__ground-shadow" aria-hidden="true" style={{ transform: `translate3d(${carPosition + 9}vw, 0, 0) scaleX(${shadowScale})`, opacity: 0.62 + Math.min(progress, 80) / 80 * 0.2 }} />
+      <img className={`bmw-intro__car ${carReady ? "bmw-intro__car--ready" : ""}`} src={BMW_CUTOUT} onLoad={() => setCarReady(true)} onError={() => setCarReady(true)} style={{ opacity: carOpacity, transform: `translate3d(${carPosition}vw, ${carLift}px, 0) scale(${carScale}) rotateY(${carYaw}deg)`, filter: "drop-shadow(0 28px 20px rgba(0,0,0,.5)) drop-shadow(-42px 0 16px rgba(224,50,44,.14))" }} alt="" aria-hidden="true" />
       <div className="bmw-intro__reading">
         <div className="bmw-intro__index"><span>LAUNCH SEQUENCE</span><span className="bmw-intro__bars" aria-hidden="true"><i /><i /><i /></span></div>
         <output className="bmw-intro__percentage" aria-live="polite">{String(progress).padStart(3, "0")}<span>%</span></output>

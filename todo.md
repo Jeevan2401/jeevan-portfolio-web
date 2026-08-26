@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Replace eased loading with a visibly linear 0–100 progression.
+- [x] Rework BMW movement into a realistic approach, close pass, and exit rather than a simple lateral slide.
+- [x] Validate the revised intro motion against the supplied recording and confirm it remains lightweight.
 - [x] Add a short lightweight engine-rev sound effect that respects browser autoplay policies.
 - [x] Add a visible mute/unmute control to the BMW intro.
 - [x] Replace the BMW visual treatment with a clean, tightly cut asset that does not slow the launch.
