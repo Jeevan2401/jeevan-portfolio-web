@@ -6,7 +6,19 @@
 import { useEffect, useRef, useState } from "react";
 
 const INTRO_DURATION = 3100;
-const BMW_CUTOUT = "/manus-storage/bmw-m4-intro-cutout_b91bb02d.png";
+const BMW_CUTOUT = "/manus-storage/bmw-m4-intro-matte_bd7c2341.png";
+
+function getCarPosition(progress: number) {
+  const stops = [
+    [0, -94], [10, -56], [25, -24], [55, 3], [82, 30], [96, 58], [100, 132],
+  ];
+  const nextIndex = stops.findIndex(([stop]) => progress <= stop);
+  if (nextIndex <= 0) return stops[0][1];
+  const [startProgress, startPosition] = stops[nextIndex - 1];
+  const [endProgress, endPosition] = stops[nextIndex];
+  const localProgress = (progress - startProgress) / (endProgress - startProgress);
+  return startPosition + (endPosition - startPosition) * localProgress;
+}
 
 type BMWIntroProps = {
   onComplete: () => void;
@@ -15,6 +27,7 @@ type BMWIntroProps = {
 export default function BMWIntro({ onComplete }: BMWIntroProps) {
   const [progress, setProgress] = useState(0);
   const [leaving, setLeaving] = useState(false);
+  const [carReady, setCarReady] = useState(false);
   const finishTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -26,6 +39,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
   };
 
   useEffect(() => {
+    if (!carReady) return;
     const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
     const reducedMotion = motionQuery.matches;
     const duration = reducedMotion ? 460 : INTRO_DURATION;
@@ -51,9 +65,11 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
       if (finishTimer.current) clearTimeout(finishTimer.current);
       if (exitTimer.current) clearTimeout(exitTimer.current);
     };
-  }, [onComplete]);
+  }, [onComplete, carReady]);
 
   const nameOpacity = Math.max(0.14, Math.min(1, progress / 78));
+  const carPosition = getCarPosition(progress);
+  const carBlur = progress > 88 ? (progress - 88) * 0.12 : 0;
 
   return (
     <section
@@ -109,17 +125,20 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         }
         .bmw-intro__car {
           position: absolute;
-          width: min(72vw, 1120px);
+          width: min(78vw, 1180px);
           max-width: none;
           top: 25%;
           left: 0;
           z-index: 2;
+          opacity: 0;
+          mix-blend-mode: screen;
           filter: drop-shadow(0 28px 20px rgba(0,0,0,.5)) drop-shadow(-42px 0 16px rgba(224,50,44,.12));
           transform: translate3d(-106%, 0, 0);
-          animation: bmw-launch ${INTRO_DURATION}ms cubic-bezier(.15,.78,.17,1) forwards;
+          transition: opacity 180ms ease, filter 50ms linear;
           user-select: none;
           pointer-events: none;
         }
+        .bmw-intro__car--ready { opacity: 1; }
         .bmw-intro__reading {
           position: relative;
           z-index: 3;
@@ -173,13 +192,6 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         }
         .bmw-intro__skip:hover, .bmw-intro__skip:focus-visible { border-color: var(--intro-red); color: #f2f0ec; outline: none; }
         .bmw-intro__skip:active { transform: scale(.97); }
-        @keyframes bmw-launch {
-          0% { transform: translate3d(-106%, 0, 0) skewX(-2deg); filter: blur(.2px) drop-shadow(0 28px 20px rgba(0,0,0,.5)); }
-          10% { transform: translate3d(-84%, 1px, 0) skewX(-1deg); }
-          38% { transform: translate3d(10vw, 0, 0) skewX(0); }
-          72% { transform: translate3d(62vw, -1px, 0) skewX(1deg); filter: blur(.55px) drop-shadow(-60px 0 18px rgba(224,50,44,.16)); }
-          100% { transform: translate3d(128vw, 0, 0) skewX(2deg); filter: blur(1.2px) drop-shadow(-90px 0 16px rgba(224,50,44,.08)); }
-        }
         @media (max-width: 640px) {
           .bmw-intro__car { width: 142vw; top: 31%; }
           .bmw-intro__reading { margin-top: min(46vh, 350px); }
@@ -187,13 +199,13 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           .bmw-intro__grid { background-size: 42px 42px; }
         }
         @media (prefers-reduced-motion: reduce) {
-          .bmw-intro__car { animation: none; transform: translate3d(-18%, 0, 0); opacity: .32; filter: grayscale(.1) blur(.2px); }
+          .bmw-intro__car--ready { opacity: .32; filter: grayscale(.1) blur(.2px); }
           .bmw-intro, .bmw-intro__name, .bmw-intro__rule b { transition-duration: 120ms; }
         }
       `}</style>
       <div className="bmw-intro__grid" aria-hidden="true" />
       <div className="bmw-intro__speedline" aria-hidden="true" />
-      <img className="bmw-intro__car" src={BMW_CUTOUT} alt="" aria-hidden="true" />
+      <img className={`bmw-intro__car ${carReady ? "bmw-intro__car--ready" : ""}`} src={BMW_CUTOUT} onLoad={() => setCarReady(true)} onError={() => setCarReady(true)} style={{ transform: `translate3d(${carPosition}%, 0, 0) skewX(${Math.min(2, progress / 52 - 1.2)}deg)`, filter: `blur(${carBlur}px) drop-shadow(0 28px 20px rgba(0,0,0,.5)) drop-shadow(-42px 0 16px rgba(224,50,44,.14))` }} alt="" aria-hidden="true" />
       <div className="bmw-intro__reading">
         <div className="bmw-intro__index"><span>LAUNCH SEQUENCE</span><span className="bmw-intro__bars" aria-hidden="true"><i /><i /><i /></span></div>
         <output className="bmw-intro__percentage" aria-live="polite">{String(progress).padStart(3, "0")}<span>%</span></output>
