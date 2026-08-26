@@ -748,6 +748,7 @@ export default function Portfolio() {
   const [introDone, setIntroDone] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileCardOpen, setProfileCardOpen] = useState(false);
+  const [profileCardFlipped, setProfileCardFlipped] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", message: "" });
   const [formErrors, setFormErrors] = useState({ name: "", email: "", message: "" });
   const [touched, setTouched] = useState({ name: false, email: false, message: false });
@@ -823,6 +824,37 @@ export default function Portfolio() {
     document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
   };
 
+  const toggleProfileCard = () => {
+    if (profileCardOpen) setProfileCardFlipped(false);
+    setProfileCardOpen((open) => !open);
+  };
+
+  const closeProfileCard = () => {
+    setProfileCardFlipped(false);
+    setProfileCardOpen(false);
+  };
+
+  const handleProfileCardMouseMove = (event) => {
+    const scene = event.currentTarget;
+    const bounds = scene.getBoundingClientRect();
+    const x = ((event.clientX - bounds.left) / bounds.width) * 100;
+    const y = ((event.clientY - bounds.top) / bounds.height) * 100;
+    const rotateY = ((x - 50) / 50) * 2.1;
+    const rotateX = ((50 - y) / 50) * 2.1;
+    scene.style.setProperty("--glare-x", `${x}%`);
+    scene.style.setProperty("--glare-y", `${y}%`);
+    scene.style.setProperty("--glare-opacity", "1");
+    scene.style.setProperty("--card-rotate-x", `${rotateX}deg`);
+    scene.style.setProperty("--card-rotate-y", `${rotateY}deg`);
+  };
+
+  const clearProfileCardGlare = (event) => {
+    const scene = event.currentTarget;
+    scene.style.setProperty("--glare-opacity", "0");
+    scene.style.setProperty("--card-rotate-x", "0deg");
+    scene.style.setProperty("--card-rotate-y", "0deg");
+  };
+
   return (
     <div
       style={{
@@ -855,11 +887,20 @@ export default function Portfolio() {
         @keyframes profileCardEnter { from { opacity: 0; transform: translateY(-10px) rotateX(-4deg) scale(.97); } to { opacity: 1; transform: translateY(0) rotateX(0) scale(1); } }
         .profile-card { position: fixed; z-index: 75; top: 72px; left: 20px; width: min(292px, calc(100vw - 40px)); padding: 10px; overflow: hidden; background: linear-gradient(145deg, #171719 0%, #0b0b0c 65%); border: 1px solid #e0322caa; box-shadow: 14px 16px 0 #050506, 0 18px 50px #00000077, inset 0 0 0 1px #ffffff0b; animation: profileCardEnter 360ms cubic-bezier(.16,.84,.44,1) both; transform-origin: top left; }
         .profile-card::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55; background: linear-gradient(112deg, transparent 0 42%, #e0322c1c 46%, transparent 53%), repeating-linear-gradient(0deg, transparent 0 22px, #ffffff05 23px 24px); }
-        .profile-card__topline, .profile-card__identity, .profile-card__stats, .profile-card__note { position: relative; z-index: 1; }
+        .profile-card__topline { position: relative; z-index: 3; }
         .profile-card__topline { display: flex; align-items: center; justify-content: space-between; min-height: 18px; color: #c9c9cc; font: 500 9px/1 'JetBrains Mono', monospace; letter-spacing: .14em; }
         .profile-card__close { width: 24px; height: 24px; padding: 0; border: 1px solid #ffffff33; color: #b8b8bd; background: #0a0a0ba8; cursor: pointer; font: 500 12px/1 'JetBrains Mono', monospace; }
         .profile-card__close:hover, .profile-card__close:focus-visible { color: #f2f0ec; border-color: ${ACCENT}; outline: none; }
-        .profile-card__art { position: relative; z-index: 1; margin-top: 9px; aspect-ratio: .93; overflow: hidden; border: 1px solid #ffffff20; background: #161618; }
+        .profile-card__scene { --glare-x: 50%; --glare-y: 50%; --glare-opacity: 0; --card-rotate-x: 0deg; --card-rotate-y: 0deg; position: relative; z-index: 1; display: block; width: 100%; height: 392px; margin-top: 9px; padding: 0; color: inherit; text-align: left; border: 0; background: transparent; cursor: pointer; perspective: 1000px; transform-style: preserve-3d; }
+        .profile-card__scene::after { content: ''; position: absolute; z-index: 5; inset: 0; opacity: var(--glare-opacity); pointer-events: none; background: radial-gradient(circle at var(--glare-x) var(--glare-y), rgba(255,255,255,.58) 0%, rgba(118,235,255,.23) 11%, rgba(255,90,200,.18) 22%, rgba(255,222,97,.12) 33%, transparent 58%), repeating-linear-gradient(113deg, transparent 0 7px, rgba(106,229,255,.16) 8px 9px, transparent 10px 18px); mix-blend-mode: color-dodge; transition: opacity 170ms ease; }
+        .profile-card__scene:focus-visible { outline: 2px solid #f2f0ec; outline-offset: 4px; }
+        .profile-card__flipper { position: relative; width: 100%; height: 100%; transform-style: preserve-3d; transform: rotateX(var(--card-rotate-x)) rotateY(var(--card-rotate-y)); transition: transform 460ms cubic-bezier(.16,.84,.44,1); }
+        .profile-card__scene[data-flipped='true'] .profile-card__flipper { transform: rotateX(var(--card-rotate-x)) rotateY(calc(180deg + var(--card-rotate-y))); transition-duration: 640ms; }
+        .profile-card__face { position: absolute; inset: 0; overflow: hidden; padding: 10px; border: 1px solid #ffffff20; background: linear-gradient(145deg, #141416 0%, #09090a 100%); backface-visibility: hidden; -webkit-backface-visibility: hidden; box-shadow: inset 0 0 0 1px #ffffff06; }
+        .profile-card__face--back { transform: rotateY(180deg); background: linear-gradient(145deg, #181416 0%, #0b0b0d 64%, #131014 100%); }
+        .profile-card__face::before { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .55; background: linear-gradient(125deg, transparent 0 37%, #e0322c18 38% 39%, transparent 40% 61%, #63c8ff16 62% 63%, transparent 64%), repeating-linear-gradient(0deg, transparent 0 24px, #ffffff05 25px 26px); }
+        .profile-card__face > * { position: relative; z-index: 1; }
+        .profile-card__art { position: relative; display: block; aspect-ratio: 1.12; overflow: hidden; border: 1px solid #ffffff20; background: #161618; }
         .profile-card__art::before { content: 'JG // PROFILE'; position: absolute; z-index: 2; top: 9px; left: 9px; padding: 5px 6px; color: #f2f0ec; background: #0a0a0bd1; border-left: 2px solid ${ACCENT}; font: 500 8px/1 'JetBrains Mono', monospace; letter-spacing: .12em; }
         .profile-card__art::after { content: ''; position: absolute; z-index: 1; inset: 0; pointer-events: none; background: linear-gradient(180deg, transparent 52%, #050506dd 100%), linear-gradient(110deg, transparent 36%, #e0322c2b 55%, transparent 67%); mix-blend-mode: screen; }
         .profile-card__art img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 50% 18%; filter: contrast(1.02) saturate(.88); }
@@ -872,6 +913,18 @@ export default function Portfolio() {
         .profile-card__stat b { display: block; color: ${ACCENT}; font: 600 8px/1 'JetBrains Mono', monospace; letter-spacing: .1em; }
         .profile-card__stat span { display: block; margin-top: 5px; color: #e4e4e6; font: 500 10px/1.2 'JetBrains Mono', monospace; letter-spacing: .04em; }
         .profile-card__note { display: block; margin: 11px 2px 1px; color: #7f7f85; font: 500 8px/1.35 'JetBrains Mono', monospace; letter-spacing: .08em; }
+        .profile-card__backhead { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid #ffffff18; }
+        .profile-card__backhead b { color: #f2f0ec; font: 700 17px/1 'Space Grotesk', sans-serif; letter-spacing: -.04em; }
+        .profile-card__backhead span { color: ${ACCENT}; font: 500 8px/1 'JetBrains Mono', monospace; letter-spacing: .12em; }
+        .profile-card__skillset { display: grid; gap: 8px; margin-top: 12px; }
+        .profile-card__skillrow { display: grid; grid-template-columns: 64px 1fr; gap: 8px; align-items: start; padding: 8px 0; border-bottom: 1px solid #ffffff10; }
+        .profile-card__skillrow b { color: ${ACCENT}; font: 500 8px/1.2 'JetBrains Mono', monospace; letter-spacing: .11em; }
+        .profile-card__skillrow span { color: #d5d5d8; font: 500 9px/1.4 'JetBrains Mono', monospace; letter-spacing: .02em; }
+        .profile-card__backstats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 13px; }
+        .profile-card__backstat { padding: 8px 6px; border: 1px solid #ffffff1c; background: #ffffff05; text-align: center; }
+        .profile-card__backstat b { display: block; color: #f2f0ec; font: 700 17px/.9 'Space Grotesk', sans-serif; letter-spacing: -.06em; }
+        .profile-card__backstat span { display: block; margin-top: 5px; color: #89898f; font: 500 7px/1.25 'JetBrains Mono', monospace; letter-spacing: .07em; }
+        .profile-card__flip-hint { display: block; margin-top: 13px; color: ${ACCENT}; font: 500 8px/1.3 'JetBrains Mono', monospace; letter-spacing: .1em; }
         .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
         .portfolio-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background: linear-gradient(105deg, transparent 0 42%, #e0322c0a 48%, transparent 58%), repeating-linear-gradient(0deg, transparent 0 28px, #ffffff05 29px 30px); mix-blend-mode: screen; }
         .hero-signal { position: absolute; z-index: 1; top: 14%; right: 6vw; width: min(34vw, 460px); aspect-ratio: 1.12; pointer-events: none; opacity: .42; border-right: 1px solid #e0322c55; border-bottom: 1px solid #e0322c55; background: linear-gradient(135deg, transparent 0 35%, #e0322c0d 35% 36%, transparent 36% 62%, #ffffff08 62% 63%, transparent 63%), repeating-linear-gradient(90deg, transparent 0 48px, #ffffff06 49px 50px); }
@@ -994,6 +1047,10 @@ export default function Portfolio() {
         @media (prefers-reduced-motion: reduce) {
           .identity-trigger__coin { animation: none; transform: rotate(-7deg); }
           .profile-card { animation-duration: 1ms; }
+          .profile-card__flipper, .profile-card__scene[data-flipped='true'] .profile-card__flipper { transition-duration: 1ms; transform: none; }
+          .profile-card__scene[data-flipped='true'] .profile-card__face--front { display: none; }
+          .profile-card__scene[data-flipped='true'] .profile-card__face--back { display: block; transform: none; }
+          .profile-card__scene::after { display: none; }
         }
       `}</style>
 
@@ -1037,7 +1094,7 @@ export default function Portfolio() {
             aria-expanded={profileCardOpen}
             aria-controls="profile-card"
             aria-label={profileCardOpen ? "Close Jeevan profile card" : "Open Jeevan profile card"}
-            onClick={() => setProfileCardOpen((open) => !open)}
+            onClick={toggleProfileCard}
           >
             <span className="identity-trigger__coin" aria-hidden>JG</span>
             <span className="identity-trigger__caption" aria-hidden>PROFILE CARD</span>
@@ -1062,22 +1119,50 @@ export default function Portfolio() {
       {profileCardOpen && (
         <aside id="profile-card" className="profile-card" aria-label="Jeevan profile card">
           <div className="profile-card__topline">
-            <span>DEVELOPER PROFILE // 01</span>
-            <button type="button" className="profile-card__close" onClick={() => setProfileCardOpen(false)} aria-label="Close profile card">×</button>
+            <span>{profileCardFlipped ? "TECHNICAL LOADOUT // 02" : "DEVELOPER PROFILE // 01"}</span>
+            <button type="button" className="profile-card__close" onClick={closeProfileCard} aria-label="Close profile card">×</button>
           </div>
-          <div className="profile-card__art">
-            <img src={PROFILE_CARD_IMAGE} alt="Portrait of Jeevan G." />
-          </div>
-          <div className="profile-card__identity">
-            <h2 className="profile-card__name">Jeevan G.</h2>
-            <span className="profile-card__rank">JG // 01</span>
-          </div>
-          <span className="profile-card__role">WEBSITE DEVELOPER · COMPUTER SCIENCE STUDENT</span>
-          <div className="profile-card__stats" aria-label="Profile specialties">
-            <div className="profile-card__stat"><b>BUILD TYPE</b><span>Websites</span></div>
-            <div className="profile-card__stat"><b>FOCUS</b><span>Responsive UX</span></div>
-          </div>
-          <span className="profile-card__note">TAP THE JG MARK AGAIN TO RETRACT</span>
+          <button
+            type="button"
+            className="profile-card__scene"
+            data-flipped={profileCardFlipped}
+            aria-pressed={profileCardFlipped}
+            aria-label={profileCardFlipped ? "Technical skills and statistics shown. Activate to return to the portrait." : "Portrait shown. Activate to reveal detailed technical skills and statistics."}
+            onClick={() => setProfileCardFlipped((flipped) => !flipped)}
+            onMouseMove={handleProfileCardMouseMove}
+            onMouseLeave={clearProfileCardGlare}
+          >
+            <span className="profile-card__flipper">
+              <span className="profile-card__face profile-card__face--front">
+                <span className="profile-card__art"><img src={PROFILE_CARD_IMAGE} alt="Portrait of Jeevan G." /></span>
+                <span className="profile-card__identity">
+                  <span className="profile-card__name">Jeevan G.</span>
+                  <span className="profile-card__rank">JG // 01</span>
+                </span>
+                <span className="profile-card__role">WEBSITE DEVELOPER · COMPUTER SCIENCE STUDENT</span>
+                <span className="profile-card__stats" aria-label="Profile specialties">
+                  <span className="profile-card__stat"><b>BUILD TYPE</b><span>Websites</span></span>
+                  <span className="profile-card__stat"><b>FOCUS</b><span>Responsive UX</span></span>
+                </span>
+                <span className="profile-card__note">ACTIVATE CARD // TECHNICAL LOADOUT</span>
+              </span>
+              <span className="profile-card__face profile-card__face--back">
+                <span className="profile-card__backhead"><b>Technical Skills</b><span>BACK // 02</span></span>
+                <span className="profile-card__skillset">
+                  <span className="profile-card__skillrow"><b>FRONTEND</b><span>React, Vite, JavaScript, responsive CSS</span></span>
+                  <span className="profile-card__skillrow"><b>PYTHON</b><span>Flask, speech workflows, scikit-learn</span></span>
+                  <span className="profile-card__skillrow"><b>VISION</b><span>OpenCV, MediaPipe, real-time detection</span></span>
+                  <span className="profile-card__skillrow"><b>SHIPPING</b><span>GitHub, Docker, deployment-minded builds</span></span>
+                </span>
+                <span className="profile-card__backstats" aria-label="Portfolio statistics">
+                  <span className="profile-card__backstat"><b>04</b><span>PROJECT LOGS</span></span>
+                  <span className="profile-card__backstat"><b>03</b><span>BUILD MODES</span></span>
+                  <span className="profile-card__backstat"><b>01</b><span>ACTIVE PROFILE</span></span>
+                </span>
+                <span className="profile-card__flip-hint">ACTIVATE CARD // PORTRAIT FACE</span>
+              </span>
+            </span>
+          </button>
         </aside>
       )}
 

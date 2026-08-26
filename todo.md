@@ -1,5 +1,9 @@
 # Active Enhancement Checklist
 
+- [x] Add a card back with detailed technical skills and truthful portfolio statistics.
+- [x] Implement click, touch, and keyboard card flipping between the portrait and skills faces.
+- [x] Add a desktop mouse-responsive holographic glare while preserving reduced-motion behavior.
+- [x] Validate the dual-sided card interaction on desktop and mobile.
 - [x] Replace the idle JG mark with a continuously rotating interactive profile-card object.
 - [x] Prepare and use a portrait crop that excludes the source watermark from the visible card art.
 - [x] Add click, touch, keyboard, and reduced-motion-safe portrait reveal behavior.
