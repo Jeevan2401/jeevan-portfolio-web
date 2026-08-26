@@ -843,14 +843,22 @@ export default function Portfolio() {
         .brand-mark { box-shadow: 5px 5px 0 #e0322c2b, inset 0 0 0 1px #ffffff0c; }
         .brand-mark::after { content: ''; position: absolute; right: -2px; bottom: 5px; width: 16px; height: 2px; background: ${ACCENT}; box-shadow: -8px -5px 0 #f2f0ec; opacity: .9; }
         .portfolio-hero::after { content: ''; position: absolute; inset: 0; pointer-events: none; opacity: .22; background: linear-gradient(105deg, transparent 0 42%, #e0322c0a 48%, transparent 58%), repeating-linear-gradient(0deg, transparent 0 28px, #ffffff05 29px 30px); mix-blend-mode: screen; }
+        .hero-signal { position: absolute; z-index: 1; top: 14%; right: 6vw; width: min(34vw, 460px); aspect-ratio: 1.12; pointer-events: none; opacity: .42; border-right: 1px solid #e0322c55; border-bottom: 1px solid #e0322c55; background: linear-gradient(135deg, transparent 0 35%, #e0322c0d 35% 36%, transparent 36% 62%, #ffffff08 62% 63%, transparent 63%), repeating-linear-gradient(90deg, transparent 0 48px, #ffffff06 49px 50px); }
+        .hero-signal::before { content: attr(data-mark); position: absolute; right: 8%; top: 6%; color: ${ACCENT}; font: 700 clamp(110px, 17vw, 260px)/.78 'Space Grotesk', sans-serif; letter-spacing: -.12em; opacity: .12; transform: skewX(-10deg); }
+        .hero-signal::after { content: ''; position: absolute; right: 0; top: 0; width: 56px; height: 34px; border-top: 2px solid ${ACCENT}; border-right: 2px solid ${ACCENT}; box-shadow: -22px 16px 0 -1px #f2f0ec; opacity: .72; }
         .proj-card { position: relative; overflow: hidden; transition: border-color 220ms ease, background 220ms ease, box-shadow 220ms ease; }
         .proj-card::after { content: ''; position: absolute; top: 12px; right: 12px; width: 16px; height: 12px; border-top: 1px solid #e0322c66; border-right: 1px solid #e0322c66; opacity: .6; pointer-events: none; transition: opacity 220ms ease, transform 220ms ease; }
+        .proj-card::before { content: ''; position: absolute; left: 12px; bottom: 12px; width: 18px; height: 12px; border-left: 1px solid #e0322c55; border-bottom: 1px solid #e0322c55; pointer-events: none; opacity: .72; }
         .proj-card:hover::after, .proj-card:focus-visible::after, .proj-card:focus-within::after { opacity: 1; transform: translate(-2px, 2px); }
         .proj-card:hover, .proj-card:focus-visible, .proj-card:focus-within { border-color: ${ACCENT}88 !important; background: #171719 !important; box-shadow: 0 20px 46px rgba(0,0,0,.24), inset 3px 0 0 ${ACCENT}; outline: none; }
         .proj-tech-reveal { max-height: 0; opacity: 0; overflow: hidden; transform: translateY(5px); transition: max-height 260ms cubic-bezier(.16,.84,.44,1), opacity 180ms ease, transform 260ms cubic-bezier(.16,.84,.44,1); }
         .proj-card:hover .proj-tech-reveal, .proj-card:focus-visible .proj-tech-reveal, .proj-card:focus-within .proj-tech-reveal { max-height: 78px; opacity: 1; transform: translateY(0); }
         .proj-tech-reveal__label { display: block; margin-top: 15px; color: ${ACCENT}; font: 500 9.5px/1 "JetBrains Mono", monospace; letter-spacing: .13em; }
         .proj-tech-reveal__copy { display: block; margin-top: 6px; color: #b8b8bd; font-size: 12px; line-height: 1.55; }
+        .contact-module { position: relative; overflow: hidden; }
+        .contact-module::before, .contact-module::after { content: ''; position: absolute; width: 18px; height: 12px; pointer-events: none; opacity: .62; }
+        .contact-module::before { left: 12px; top: 12px; border-top: 1px solid ${ACCENT}; border-left: 1px solid ${ACCENT}; }
+        .contact-module::after { right: 12px; bottom: 12px; border-right: 1px solid ${ACCENT}; border-bottom: 1px solid ${ACCENT}; }
         @media (max-width: 640px) {
           .contact-grid { grid-template-columns: 1fr !important; }
           .contact-form-row { grid-template-columns: 1fr !important; }
@@ -862,6 +870,7 @@ export default function Portfolio() {
           .hero-actions { gap: 10px !important; margin-top: 22px !important; }
           .hero-actions button { padding: 12px 14px !important; font-size: 10px !important; }
           .brand-mark { width: 38px !important; height: 38px !important; }
+          .hero-signal { right: -8vw; top: 8%; width: 66vw; opacity: .3; }
         }
         button, a.cursor-hover, .send-btn, input, textarea {
           border-radius: 10px;
@@ -1104,6 +1113,7 @@ export default function Portfolio() {
         }}
       >
         <ParticleField />
+        <div className="hero-signal" data-mark="JG" aria-hidden="true" />
         <div
           aria-hidden
           className="gradient-anim"
@@ -1529,7 +1539,7 @@ export default function Portfolio() {
           }}
         >
           <Reveal delay={80}>
-            <div style={{ border: "1px solid #ffffff1a", background: "#131315", padding: 24, height: "100%" }}>
+            <div className="contact-module" style={{ border: "1px solid #ffffff1a", background: "#131315", padding: 24, height: "100%" }}>
               <div className="mono" style={{ fontSize: 11, letterSpacing: 1.5, color: "#8b8b90", marginBottom: 8 }}>
                 AVAILABILITY
               </div>
@@ -1608,6 +1618,7 @@ export default function Portfolio() {
             <form
               onSubmit={handleFormSubmit}
               noValidate
+              className="contact-module"
               style={{
                 border: "1px solid #ffffff1a",
                 background: "#131315",

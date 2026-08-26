@@ -1,5 +1,8 @@
 # Active Enhancement Checklist
 
+- [x] Create a tightly cropped BMW cutout with the studio background and negative space removed.
+- [x] Replace the rectangular background image in the CSS launch with the clean car cutout.
+- [x] Verify the intro reads as a moving car rather than a moving picture on desktop and mobile.
 - [x] Replace the pending generated video dependency with a CSS BMW launch pass using the prepared side-profile reference.
 - [x] Add lightweight wheel, suspension, smoke, shadow, and speed-line cues to the one-directional CSS motion.
 - [x] Validate the CSS intro on desktop and mobile while preserving sound, skip, and linear-loading controls.

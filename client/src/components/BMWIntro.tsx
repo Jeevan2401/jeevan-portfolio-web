@@ -5,7 +5,7 @@
 import { useEffect, useRef, useState } from "react";
 
 const INTRO_DURATION = 3100;
-const BMW_REFERENCE = "/manus-storage/bmw-side-profile-css_812004bf.webp";
+const BMW_REFERENCE = "/manus-storage/bmw-side-profile-true-alpha_800a6571.webp";
 const ENGINE_REV = "/manus-storage/bmw-engine-rev_dede1da1.mp3";
 
 type BMWIntroProps = {
@@ -129,17 +129,17 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           aspect-ratio: 16 / 9;
           opacity: 0;
           transform-origin: 48% 66%;
-          background: url("/manus-storage/bmw-side-profile-css_812004bf.webp") center / contain no-repeat;
           pointer-events: none;
           will-change: transform, opacity;
         }
         .bmw-intro__rig--ready { opacity: 1; animation: bmw-drag-pass var(--launch-duration) cubic-bezier(.2,.7,.18,1) both; }
         .bmw-intro__car {
-          position: absolute;
-          width: 1px;
-          height: 1px;
-          opacity: 0;
-          pointer-events: none;
+          display: block;
+          width: 100%;
+          height: 100%;
+          object-fit: contain;
+          filter: contrast(1.025) saturate(1.035) drop-shadow(0 24px 22px rgba(0,0,0,.55));
+          user-select: none;
         }
         .bmw-intro__shadow {
           position: absolute;
@@ -154,22 +154,6 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           opacity: .72;
           animation: bmw-shadow var(--launch-duration) cubic-bezier(.2,.7,.18,1) both;
         }
-        .bmw-intro__wheel {
-          position: absolute;
-          z-index: 2;
-          top: 59%;
-          width: 12.8%;
-          aspect-ratio: 1;
-          border: 1px solid rgba(241,241,243,.32);
-          border-radius: 50%;
-          background: repeating-conic-gradient(from 0deg, rgba(255,255,255,.18) 0deg 3deg, transparent 3deg 15deg);
-          box-shadow: inset 0 0 0 25% rgba(0,0,0,.28), 0 0 16px rgba(255,255,255,.08);
-          mix-blend-mode: screen;
-          opacity: 0;
-          animation: bmw-wheel-spin var(--launch-duration) linear both;
-        }
-        .bmw-intro__wheel--rear { left: 17.3%; }
-        .bmw-intro__wheel--front { left: 73.1%; }
         .bmw-intro__smoke {
           position: absolute;
           z-index: -2;
@@ -201,11 +185,6 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
           52% { transform: translate3d(44vw,-3px,0) scale(1.02); filter: blur(.22px); }
           79% { transform: translate3d(86vw,-1px,0) scale(1.012); filter: blur(.5px); }
           100% { transform: translate3d(137vw,0,0) scale(.99); filter: blur(1.1px); }
-        }
-        @keyframes bmw-wheel-spin {
-          0%, 15% { transform: rotate(0); opacity: 0; }
-          18% { opacity: .16; }
-          100% { transform: rotate(2160deg); opacity: .24; }
         }
         @keyframes bmw-shadow {
           0%, 15% { transform: scaleX(.96); opacity: .65; }
@@ -251,7 +230,7 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         }
         @media (prefers-reduced-motion: reduce) {
           .bmw-intro__rig--ready { animation: none; transform: translate3d(10vw,0,0); }
-          .bmw-intro__wheel, .bmw-intro__smoke, .bmw-intro__shadow { animation: none; opacity: 0; }
+          .bmw-intro__smoke, .bmw-intro__shadow { animation: none; opacity: 0; }
           .bmw-intro, .bmw-intro__reading, .bmw-intro__rule b { transition-duration: 120ms; }
         }
       `}</style>
@@ -261,8 +240,6 @@ export default function BMWIntro({ onComplete }: BMWIntroProps) {
         <div className="bmw-intro__shadow" />
         <div className="bmw-intro__smoke" />
         <img className="bmw-intro__car" src={BMW_REFERENCE} onLoad={() => setCarReady(true)} onError={() => setCarReady(true)} alt="" fetchPriority="high" />
-        <span className="bmw-intro__wheel bmw-intro__wheel--rear" />
-        <span className="bmw-intro__wheel bmw-intro__wheel--front" />
       </div>
       <div className="bmw-intro__speedline" aria-hidden="true" style={{ transform: `translate3d(${-progress * 0.18}vw, 0, 0) skewY(-2deg)`, opacity: 0.52 + Math.min(progress, 70) / 70 * 0.48 }} />
       <audio ref={audioRef} src={ENGINE_REV} preload="metadata" muted={soundMuted} />
