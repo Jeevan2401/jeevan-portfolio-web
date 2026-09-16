@@ -48,7 +48,7 @@ function ArrowUpRightIcon({ size = 14, color = "currentColor" }) {
 }
 
 const MANUS_ASSET_HOST = "https://jeevanfolio-hpx3da3e.manus.space";
-const RESUME_DATA_URL = `${MANUS_ASSET_HOST}/manus-storage/Jeevan_Resume_f783bfa1.pdf`;
+const RESUME_DATA_URL = "/Jeevan_Resume.pdf";
 const PROFILE_CARD_IMAGE = `${MANUS_ASSET_HOST}/manus-storage/jeevan-profile-card-crop_9a99806a.png`;
 const LINKS = {
   github: "https://github.com/Jeevan2401",
